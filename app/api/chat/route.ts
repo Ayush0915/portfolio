@@ -36,7 +36,11 @@ function loadPortfolioContext(): string {
 // ─── POST Handler ──────────────────────────────────────────────────────────
 
 function generateMockChatbotResponse(userMessage: string): string {
-  const msg = userMessage.toLowerCase();
+  const msg = userMessage.toLowerCase().trim();
+
+  if (/^(hi+|hello|hey+|hola|greetings)\b/.test(msg)) {
+    return `Hey there! 👋 How can I help you today? Feel free to ask me about Ayush's projects (like CodeVerdict, CareerIQ, or Digital Wellbeing), his skills, or education!`;
+  }
 
   if (msg.includes("codeverdict") || msg.includes("review") || msg.includes("verdict")) {
     return `He built CodeVerdict as a multi-agent AI code review system to automate pull request analysis. Here's what makes it notable:
