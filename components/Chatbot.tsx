@@ -291,7 +291,7 @@ export function Chatbot() {
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
-            className="fixed bottom-4 right-4 z-50 w-full max-w-sm h-96 flex flex-col rounded-lg border border-zinc-800 bg-zinc-950 shadow-2xl"
+            className="fixed bottom-4 right-4 z-50 w-full max-w-lg h-[520px] flex flex-col rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl shadow-black/60"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -324,7 +324,7 @@ export function Chatbot() {
                   transition={{ duration: 0.3, delay: 0.1 }}
                 >
                   <motion.div
-                    className="max-w-xs px-3 py-2 rounded-lg text-sm bg-zinc-800 text-zinc-100 rounded-bl-none"
+                    className="max-w-[80%] px-4 py-2.5 rounded-lg text-sm bg-zinc-800 text-zinc-100 rounded-bl-none"
                     initial={{ scale: 0.95 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.2 }}
@@ -350,7 +350,7 @@ What would you like to know? Ask about projects like CodeVerdict or CareerIQ, hi
                     transition={{ duration: 0.2, delay: index * 0.05 }}
                   >
                     <motion.div
-                      className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+                      className={`max-w-[80%] px-4 py-2.5 rounded-lg text-sm ${
                         message.role === 'user'
                           ? 'bg-indigo-500 text-white rounded-br-none'
                           : 'bg-zinc-800 text-zinc-100 rounded-bl-none'
