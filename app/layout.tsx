@@ -1,19 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Chatbot } from "@/components/Chatbot";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Ayush Kumar Bhadani — Portfolio",
@@ -28,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${jetbrainsMono.variable} antialiased bg-zinc-950 text-zinc-100 min-h-screen flex flex-col`}
+        className="antialiased bg-zinc-950 text-zinc-100 min-h-screen flex flex-col"
       >
         <Navbar />
         <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-16 pt-28">

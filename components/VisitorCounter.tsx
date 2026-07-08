@@ -10,23 +10,22 @@ export function VisitorCounter() {
   useEffect(() => {
     const fetchAndTrackVisit = async () => {
       try {
-        // First, increment the visit count
         const visitResponse = await fetch("/api/visits", { method: "POST" });
-        if (!visitResponse.ok) throw new Error("Failed to track visit");
+        if (!visitResponse.ok) {
+          return;
+        }
 
         const visitData = await visitResponse.json();
-        setCount(visitData.count);
-      } catch (error) {
-        console.error("Error tracking visit:", error);
-        // Fallback: try to get the current count
+        setCount(typeof visitData.count === "number" ? visitData.count : null);
+      } catch {
         try {
           const getResponse = await fetch("/api/visits");
           if (getResponse.ok) {
             const getData = await getResponse.json();
-            setCount(getData.count);
+            setCount(typeof getData.count === "number" ? getData.count : null);
           }
         } catch {
-          console.error("Error fetching visit count");
+          setCount(null);
         }
       } finally {
         setIsLoading(false);

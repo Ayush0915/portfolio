@@ -3,9 +3,6 @@ import { useRef, useState } from "react";
 import { TimelineContent } from "@/components/ui/timeline-animation";
 import { contact } from "@/lib/data";
 import Image from "next/image";
-import { Playfair_Display } from "next/font/google";
-
-const playfair = Playfair_Display({ subsets: ["latin"], style: ["italic"] });
 
 // ─── Edit these to match your details ──────────────────────────────────────
 const facts = [
@@ -82,7 +79,7 @@ export default function AboutContent() {
           animationNum={2}
           timelineRef={sectionRef}
           customVariants={fadeVariants}
-          className={`${playfair.className} text-[22px] sm:text-[30px] text-indigo-400 border-2 border-indigo-500/50 border-dotted inline px-1.5 rounded-md`}
+          className="font-accent italic text-[22px] sm:text-[30px] text-indigo-400 border-2 border-indigo-500/50 border-dotted inline px-1.5 rounded-md"
         >
           AI systems
         </TimelineContent>{" "}
@@ -92,7 +89,7 @@ export default function AboutContent() {
           animationNum={3}
           timelineRef={sectionRef}
           customVariants={fadeVariants}
-          className={`${playfair.className} text-[22px] sm:text-[30px] text-amber-400 border-2 border-amber-500/50 border-dotted inline px-1.5 rounded-md`}
+          className="font-accent italic text-[22px] sm:text-[30px] text-amber-400 border-2 border-amber-500/50 border-dotted inline px-1.5 rounded-md"
         >
           actually run,
         </TimelineContent>{" "}
@@ -102,7 +99,7 @@ export default function AboutContent() {
           animationNum={4}
           timelineRef={sectionRef}
           customVariants={fadeVariants}
-          className={`${playfair.className} text-[22px] sm:text-[30px] text-emerald-400 border-2 border-emerald-500/50 border-dotted inline px-1.5 rounded-md`}
+          className="font-accent italic text-[22px] sm:text-[30px] text-emerald-400 border-2 border-emerald-500/50 border-dotted inline px-1.5 rounded-md"
         >
           notebooks.
         </TimelineContent>
@@ -206,15 +203,15 @@ export default function AboutContent() {
         {/* Column 1 */}
         <p className="text-[13px]">
           I&apos;m curious about how{" "}
-          <span className={`${playfair.className} text-[17px] text-zinc-200 not-italic`}>
+          <span className="font-accent text-[17px] text-zinc-200 not-italic">
             neural models
           </span>{" "}
           actually represent knowledge under the hood — not just using third-party APIs, but fine-tuning{" "}
-          <span className={`${playfair.className} text-[16px] text-indigo-300 italic`}>
+          <span className="font-accent text-[16px] text-indigo-300 italic">
             Transformers
           </span>
           {" "}and engineering complex{" "}
-          <span className={`${playfair.className} text-[16px] text-indigo-300 italic`}>
+          <span className="font-accent text-[16px] text-indigo-300 italic">
             agentic pipelines
           </span>{" "}
           using PyTorch, LangChain, and vector indices to produce reliable production inference.
@@ -223,11 +220,11 @@ export default function AboutContent() {
         {/* Column 2 */}
         <p className="text-[13px]">
           I believe the next wave of software belongs to developers who can bridge the gap between statistical ML models and deterministic software engineering. That&apos;s why I focus on building{" "}
-          <span className={`${playfair.className} text-[17px] text-zinc-200 not-italic`}>
+          <span className="font-accent text-[17px] text-zinc-200 not-italic">
             pipelines that measure
           </span>{" "}
           real-world performance — grounding LLMs, structuring unstructured outputs, and optimizing latency to under{" "}
-          <span className={`${playfair.className} text-[16px] text-amber-300 italic`}>
+          <span className="font-accent text-[16px] text-amber-300 italic">
             200ms
           </span>{" "}
           for live applications.

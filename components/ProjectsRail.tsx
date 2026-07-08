@@ -44,7 +44,13 @@ export default function ProjectsRail() {
   const onTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
     const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+    if (Math.abs(dx) > 40) {
+      if (dx < 0) {
+        next();
+      } else {
+        prev();
+      }
+    }
     touchStartX.current = null;
   };
   const onWheel = (e: React.WheelEvent) => {
@@ -53,7 +59,11 @@ export default function ProjectsRail() {
     // only fire on predominantly horizontal scroll (trackpad swipe)
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 20) {
       lastWheelTime.current = now;
-      e.deltaX > 0 ? next() : prev();
+      if (e.deltaX > 0) {
+        next();
+      } else {
+        prev();
+      }
     }
   };
 
@@ -251,4 +261,3 @@ export default function ProjectsRail() {
     </>
   );
 }
-

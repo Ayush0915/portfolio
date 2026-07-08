@@ -9,9 +9,18 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.simpleicons.org",
+        pathname: "/**",
+      },
     ],
   },
 };
 
 export default nextConfig;
-

@@ -2,6 +2,16 @@
 import { motion, useInView, type Variants } from "framer-motion";
 import { type CSSProperties, type ElementType, type ReactNode, type RefObject } from "react";
 
+const motionElements = {
+  a: motion.a,
+  div: motion.div,
+  h1: motion.h1,
+  h2: motion.h2,
+  h3: motion.h3,
+  p: motion.p,
+  span: motion.span,
+} as const;
+
 interface TimelineContentProps {
   as?: ElementType;
   animationNum: number;
@@ -30,9 +40,10 @@ export function TimelineContent({
     amount: 0.15,
   });
 
-  // motion() factory accepts any HTML element string or React component
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const MotionEl = motion(as as any);
+  const MotionEl =
+    typeof as === "string" && as in motionElements
+      ? motionElements[as as keyof typeof motionElements]
+      : motion.div;
 
   return (
     <MotionEl

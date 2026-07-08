@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Network, Radio, Wifi, Share2, Zap } from "lucide-react";
 import { skillGroups } from "@/lib/data";
@@ -151,7 +152,7 @@ function FloatingIcon({
         {isArch && LucideIcon ? (
           <LucideIcon className="w-full h-full text-indigo-400" strokeWidth={1.5} />
         ) : ICONS[skill] ? (
-          <img src={ICONS[skill]} alt={skill} className="w-full h-full object-contain" loading="lazy" />
+          <Image src={ICONS[skill]} alt={skill} width={32} height={32} className="h-full w-full object-contain" />
         ) : (
           <span className="text-zinc-300 text-[9px] font-bold text-center leading-tight">
             {skill.slice(0, 3).toUpperCase()}
@@ -226,5 +227,4 @@ export default function SkillsOrbit() {
     </div>
   );
 }
-
 

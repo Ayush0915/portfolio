@@ -1,16 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Ably from "ably";
-import type { RealtimeChannel, TokenRequest } from "ably";
+import { useEffect, useMemo, useState } from "react";
 
-const DEFAULT_CHANNEL = "presence:portfolio-visitors";
 const SESSION_ID_KEY = "portfolio:liveVisitors:sessionId";
-const LEADER_LOCK_KEY = "portfolio:liveVisitors:leader";
-const SHARED_SNAPSHOT_KEY = "portfolio:liveVisitors:snapshot";
-const LEADER_TTL_MS = 20000;
-const LEADER_REFRESH_MS = 5000;
-const ELECTION_CHECK_MS = 6000;
 
 type LocationResponse = {
   city: string;
@@ -18,12 +10,6 @@ type LocationResponse = {
   countryCode: string;
   latitude: number;
   longitude: number;
-};
-
-type AuthResponse = {
-  tokenRequest: unknown;
-  clientId: string;
-  channelName: string;
 };
 
 export type LiveVisitor = {
@@ -37,104 +23,37 @@ export type LiveVisitor = {
   longitude: number;
 };
 
-const MOCK_VISITORS: LiveVisitor[] = [
-  { clientId: "mock-1", sessionId: "mock-1", avatarSeed: "Bangalore1", city: "Bengaluru", country: "India", countryCode: "IN", latitude: 12.9780, longitude: 77.6400 },
-  { clientId: "mock-2", sessionId: "mock-2", avatarSeed: "Bangalore2", city: "Bengaluru", country: "India", countryCode: "IN", latitude: 12.9300, longitude: 77.5800 },
-  { clientId: "mock-3", sessionId: "mock-3", avatarSeed: "Bangalore3", city: "Bengaluru", country: "India", countryCode: "IN", latitude: 12.9250, longitude: 77.6100 },
-  { clientId: "mock-4", sessionId: "mock-4", avatarSeed: "Bangalore4", city: "Bengaluru", country: "India", countryCode: "IN", latitude: 12.9900, longitude: 77.5900 },
-  { clientId: "mock-5", sessionId: "mock-5", avatarSeed: "Bangalore5", city: "Bengaluru", country: "India", countryCode: "IN", latitude: 12.9500, longitude: 77.5400 },
-];
+type ConnectionState = "connecting" | "live" | "local";
 
 type UseLiveVisitorsResult = {
   visitors: LiveVisitor[];
   currentVisitor: LiveVisitor | null;
   isConnected: boolean;
+  connectionState: ConnectionState;
   error: string | null;
 };
 
-type LeaderLock = {
-  tabId: string;
-  expiresAt: number;
+const FALLBACK_LOCATION: LocationResponse = {
+  city: "Bengaluru",
+  country: "India",
+  countryCode: "IN",
+  latitude: 12.9716,
+  longitude: 77.5946,
 };
 
-type SharedSnapshot = {
-  visitors: LiveVisitor[];
-  isConnected: boolean;
-};
+const SAMPLE_VISITOR_OFFSETS = [
+  { city: "Mumbai", country: "India", countryCode: "IN", lat: 19.076, lng: 72.8777 },
+  { city: "Delhi", country: "India", countryCode: "IN", lat: 28.6139, lng: 77.209 },
+  { city: "Singapore", country: "Singapore", countryCode: "SG", lat: 1.3521, lng: 103.8198 },
+  { city: "London", country: "United Kingdom", countryCode: "GB", lat: 51.5072, lng: -0.1276 },
+  { city: "San Francisco", country: "United States", countryCode: "US", lat: 37.7749, lng: -122.4194 },
+];
 
-async function fetchLocation(): Promise<LocationResponse> {
-  const response = await fetch("/api/location");
-  if (!response.ok) {
-    throw new Error("Failed to resolve location");
+function createSessionId() {
+  if (typeof window === "undefined") {
+    return "visitor-ssr";
   }
 
-  return (await response.json()) as LocationResponse;
-}
-
-async function fetchTokenRequest(clientId: string): Promise<AuthResponse> {
-  const response = await fetch("/api/realtime/auth", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ clientId }),
-  });
-
-  if (!response.ok) {
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    throw new Error(payload.error || "Failed to authenticate realtime session");
-  }
-
-  return (await response.json()) as AuthResponse;
-}
-
-function mapMembersToVisitors(members: Array<{ clientId: string; data?: unknown }>): LiveVisitor[] {
-  return members
-    .map((member) => {
-      const data = (member.data || {}) as Partial<LiveVisitor>;
-
-      if (typeof data.latitude !== "number" || typeof data.longitude !== "number") {
-        return null;
-      }
-
-      return {
-        clientId: member.clientId,
-        sessionId: data.sessionId || member.clientId,
-        avatarSeed: data.avatarSeed || member.clientId,
-        city: data.city || "Unknown city",
-        country: data.country || "Unknown country",
-        countryCode: data.countryCode || "UN",
-        latitude: data.latitude,
-        longitude: data.longitude,
-      } satisfies LiveVisitor;
-    })
-    .filter((item): item is LiveVisitor => item !== null);
-}
-
-function readJson<T>(value: string | null): T | null {
-  if (!value) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
-  }
-}
-
-function readLeaderLock(): LeaderLock | null {
-  return readJson<LeaderLock>(window.localStorage.getItem(LEADER_LOCK_KEY));
-}
-
-function isLockExpired(lock: LeaderLock | null): boolean {
-  if (!lock) {
-    return true;
-  }
-  return lock.expiresAt <= Date.now();
-}
-
-function getOrCreateSharedSessionId(): string {
   try {
     const existing = window.localStorage.getItem(SESSION_ID_KEY);
     if (existing) {
@@ -149,393 +68,120 @@ function getOrCreateSharedSessionId(): string {
   }
 }
 
+function toVisitor(location: LocationResponse, sessionId: string): LiveVisitor {
+  return {
+    clientId: sessionId,
+    sessionId,
+    avatarSeed: sessionId,
+    city: location.city || FALLBACK_LOCATION.city,
+    country: location.country || FALLBACK_LOCATION.country,
+    countryCode: location.countryCode || FALLBACK_LOCATION.countryCode,
+    latitude: Number.isFinite(location.latitude) ? location.latitude : FALLBACK_LOCATION.latitude,
+    longitude: Number.isFinite(location.longitude) ? location.longitude : FALLBACK_LOCATION.longitude,
+  };
+}
+
+function sampleVisitors(current: LiveVisitor): LiveVisitor[] {
+  const nearbyCurrent = {
+    ...current,
+    latitude: current.latitude || FALLBACK_LOCATION.latitude,
+    longitude: current.longitude || FALLBACK_LOCATION.longitude,
+  };
+
+  const samples = SAMPLE_VISITOR_OFFSETS.map((item, index) => ({
+    clientId: `sample-${index + 1}`,
+    sessionId: `sample-${index + 1}`,
+    avatarSeed: `${item.city}-${index + 1}`,
+    city: item.city,
+    country: item.country,
+    countryCode: item.countryCode,
+    latitude: item.lat,
+    longitude: item.lng,
+  }));
+
+  return [nearbyCurrent, ...samples];
+}
+
+async function getLocation(): Promise<LocationResponse> {
+  const response = await fetch("/api/location", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("Location lookup unavailable");
+  }
+
+  return (await response.json()) as LocationResponse;
+}
+
+async function canUseRealtime(sessionId: string): Promise<boolean> {
+  try {
+    const response = await fetch("/api/realtime/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clientId: sessionId }),
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function useLiveVisitors(): UseLiveVisitorsResult {
-  const [visitors, setVisitors] = useState<LiveVisitor[]>([]);
   const [currentVisitor, setCurrentVisitor] = useState<LiveVisitor | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [connectionState, setConnectionState] = useState<ConnectionState>("connecting");
   const [error, setError] = useState<string | null>(null);
 
-  const ablyRef = useRef<Ably.Realtime | null>(null);
-  const channelRef = useRef<RealtimeChannel | null>(null);
-  const sessionIdRef = useRef("visitor-pending");
-  const tabIdRef = useRef(`tab-${crypto.randomUUID()}`);
-  const isLeaderRef = useRef(false);
-  const startedRealtimeRef = useRef(false);
-  const leaderRefreshRef = useRef<number | null>(null);
-  const electionCheckRef = useRef<number | null>(null);
-  const hasRealtimeFailedRef = useRef(false);
-
   useEffect(() => {
-    let isMounted = true;
+    let cancelled = false;
 
-    const publishSnapshot = (snapshot: SharedSnapshot) => {
-      if (!isLeaderRef.current) {
-        return;
-      }
+    async function boot() {
+      const sessionId = createSessionId();
 
       try {
-        window.localStorage.setItem(SHARED_SNAPSHOT_KEY, JSON.stringify(snapshot));
-      } catch {
-        // Ignore storage write failures and continue using in-memory state.
-      }
-    };
-
-    const loadSharedSnapshot = (): SharedSnapshot | null => {
-      try {
-        return readJson<SharedSnapshot>(window.localStorage.getItem(SHARED_SNAPSHOT_KEY));
-      } catch {
-        return null;
-      }
-    };
-
-    const renewLeadership = () => {
-      if (!isLeaderRef.current) {
-        return;
-      }
-
-      const nextLock: LeaderLock = {
-        tabId: tabIdRef.current,
-        expiresAt: Date.now() + LEADER_TTL_MS,
-      };
-
-      try {
-        window.localStorage.setItem(LEADER_LOCK_KEY, JSON.stringify(nextLock));
-      } catch {
-        // Ignore storage write failures.
-      }
-    };
-
-    const tryAcquireLeadership = (): boolean => {
-      const existing = readLeaderLock();
-      if (!isLockExpired(existing) && existing?.tabId !== tabIdRef.current) {
-        return false;
-      }
-
-      const newLock: LeaderLock = {
-        tabId: tabIdRef.current,
-        expiresAt: Date.now() + LEADER_TTL_MS,
-      };
-
-      try {
-        window.localStorage.setItem(LEADER_LOCK_KEY, JSON.stringify(newLock));
-      } catch {
-        return false;
-      }
-
-      const verified = readLeaderLock();
-      return verified?.tabId === tabIdRef.current;
-    };
-
-    const releaseLeadership = () => {
-      const existing = readLeaderLock();
-      if (existing?.tabId !== tabIdRef.current) {
-        return;
-      }
-
-      try {
-        window.localStorage.removeItem(LEADER_LOCK_KEY);
-      } catch {
-        // Ignore storage remove failures.
-      }
-    };
-
-    const startLeaderHeartbeat = () => {
-      renewLeadership();
-
-      if (leaderRefreshRef.current !== null) {
-        window.clearInterval(leaderRefreshRef.current);
-      }
-
-      leaderRefreshRef.current = window.setInterval(() => {
-        renewLeadership();
-      }, LEADER_REFRESH_MS);
-    };
-
-    const stopLeaderHeartbeat = () => {
-      if (leaderRefreshRef.current !== null) {
-        window.clearInterval(leaderRefreshRef.current);
-        leaderRefreshRef.current = null;
-      }
-    };
-
-    const syncFromSharedSnapshot = () => {
-      const shared = loadSharedSnapshot();
-      if (!shared || !isMounted) {
-        return;
-      }
-
-      setVisitors(shared.visitors);
-      setIsConnected(shared.isConnected);
-    };
-
-    const leavePresenceSafely = async (channel: RealtimeChannel) => {
-      if (channel.state !== "attached") {
-        return;
-      }
-
-      try {
-        await channel.presence.leave();
-      } catch {
-        // Ignore leave failures during shutdown races.
-      }
-    };
-
-    const teardownRealtime = () => {
-      const channel = channelRef.current;
-      if (channel) {
-        void leavePresenceSafely(channel);
-        void channel.detach();
-      }
-
-      if (ablyRef.current) {
-        ablyRef.current.close();
-      }
-
-      channelRef.current = null;
-      ablyRef.current = null;
-      startedRealtimeRef.current = false;
-    };
-
-    const becomeFollower = () => {
-      if (!isMounted) {
-        return;
-      }
-
-      isLeaderRef.current = false;
-      stopLeaderHeartbeat();
-      teardownRealtime();
-      syncFromSharedSnapshot();
-    };
-
-    const maybePromoteToLeader = async (payload: LiveVisitor) => {
-      if (startedRealtimeRef.current || !isMounted) {
-        return;
-      }
-
-      if (!tryAcquireLeadership()) {
-        return;
-      }
-
-      isLeaderRef.current = true;
-      startLeaderHeartbeat();
-      await connectRealtimeAsLeader(payload);
-    };
-
-    const connectRealtimeAsLeader = async (payload: LiveVisitor) => {
-      startedRealtimeRef.current = true;
-
-      let auth: AuthResponse;
-      try {
-        auth = await fetchTokenRequest(sessionIdRef.current);
-      } catch (authBootError) {
-        const message = authBootError instanceof Error
-          ? authBootError.message
-          : "Live visitors unavailable";
-        console.warn(`${message}. Ably authentication failed. Falling back to simulated live visitors.`);
-        
-        hasRealtimeFailedRef.current = true;
-        if (isMounted) {
-          setError(null);
-          setIsConnected(false);
-          setVisitors([payload, ...MOCK_VISITORS]);
-        }
-        
-        isLeaderRef.current = false;
-        stopLeaderHeartbeat();
-        releaseLeadership();
-        startedRealtimeRef.current = false;
-        return;
-      }
-
-      if (!isMounted) {
-        startedRealtimeRef.current = false;
-        return;
-      }
-
-      setError(null);
-      payload.clientId = auth.clientId;
-      setCurrentVisitor({ ...payload });
-
-      const realtime = new Ably.Realtime({
-        clientId: auth.clientId,
-        authCallback: async (_params, callback) => {
-          try {
-            const refreshed = await fetchTokenRequest(sessionIdRef.current);
-            callback(null, refreshed.tokenRequest as TokenRequest);
-          } catch (authError) {
-            const message = authError instanceof Error ? authError.message : "Realtime auth refresh failed";
-            callback(message, null);
-          }
-        },
-      });
-
-      const channelName = auth.channelName || DEFAULT_CHANNEL;
-      const channel = realtime.channels.get(channelName);
-
-      ablyRef.current = realtime;
-      channelRef.current = channel;
-
-      await channel.attach();
-      await channel.presence.enter(payload);
-
-      const syncPresence = async () => {
-        const presenceSet = await channel.presence.get();
-        const mapped = mapMembersToVisitors(presenceSet);
-        if (isMounted) {
-          setVisitors(mapped);
-          publishSnapshot({ visitors: mapped, isConnected: true });
-        }
-      };
-
-      await syncPresence();
-
-      channel.presence.subscribe(async () => {
-        await syncPresence();
-      });
-
-      const handleUnload = () => {
-        if (channelRef.current) {
-          void leavePresenceSafely(channelRef.current);
-        }
-      };
-
-      window.addEventListener("beforeunload", handleUnload);
-
-      realtime.connection.on("connected", () => {
-        if (isMounted) {
-          setIsConnected(true);
-          publishSnapshot({ visitors, isConnected: true });
-        }
-      });
-
-      realtime.connection.on("disconnected", () => {
-        if (isMounted) {
-          setIsConnected(false);
-          publishSnapshot({ visitors, isConnected: false });
-        }
-      });
-
-      return () => {
-        window.removeEventListener("beforeunload", handleUnload);
-      };
-    };
-
-    const bootstrap = async () => {
-      try {
-        const sessionId = getOrCreateSharedSessionId();
-        sessionIdRef.current = sessionId;
-        const location = await fetchLocation();
-
-        const payload: LiveVisitor = {
-          clientId: sessionId,
-          sessionId,
-          avatarSeed: sessionId,
-          city: "Bengaluru",
-          country: "India",
-          countryCode: "IN",
-          latitude: 12.9716,
-          longitude: 77.5946,
-        };
-
-        if (!isMounted) {
+        const location = await getLocation();
+        if (cancelled) {
           return;
         }
 
-        setCurrentVisitor(payload);
-        setVisitors([payload]);
+        const visitor = toVisitor(location, sessionId);
+        setCurrentVisitor(visitor);
 
-        syncFromSharedSnapshot();
-        await maybePromoteToLeader(payload);
-
-        const onStorage = (event: StorageEvent) => {
-          if (!isMounted || isLeaderRef.current) {
-            return;
-          }
-
-          if (event.key === SHARED_SNAPSHOT_KEY) {
-            syncFromSharedSnapshot();
-          }
-
-          if (event.key === LEADER_LOCK_KEY) {
-            const lock = readJson<LeaderLock>(event.newValue);
-            if (isLockExpired(lock) && !hasRealtimeFailedRef.current) {
-              void maybePromoteToLeader(payload);
-            }
-          }
-        };
-
-        window.addEventListener("storage", onStorage);
-
-        electionCheckRef.current = window.setInterval(() => {
-          if (isLeaderRef.current || hasRealtimeFailedRef.current) {
-            return;
-          }
-
-          const lock = readLeaderLock();
-          if (isLockExpired(lock)) {
-            void maybePromoteToLeader(payload);
-          }
-        }, ELECTION_CHECK_MS);
-
-        return () => {
-          window.removeEventListener("storage", onStorage);
-        };
-      } catch (bootError) {
-        if (isMounted) {
-          const message = bootError instanceof Error ? bootError.message : "Live visitors unavailable";
-          setError(message);
+        const realtimeReady = await canUseRealtime(sessionId);
+        if (!cancelled) {
+          setConnectionState(realtimeReady ? "live" : "local");
+          setError(null);
         }
-      }
-    };
+      } catch (bootError) {
+        if (cancelled) {
+          return;
+        }
 
-    const cleanupListenerPromise = bootstrap();
+        const visitor = toVisitor(FALLBACK_LOCATION, sessionId);
+        setCurrentVisitor(visitor);
+        setConnectionState("local");
+        setError(bootError instanceof Error ? bootError.message : "Live visitors unavailable");
+      }
+    }
+
+    void boot();
 
     return () => {
-      isMounted = false;
-
-      void cleanupListenerPromise.then((dispose) => {
-        if (typeof dispose === "function") {
-          dispose();
-        }
-      });
-
-      if (electionCheckRef.current !== null) {
-        window.clearInterval(electionCheckRef.current);
-        electionCheckRef.current = null;
-      }
-
-      stopLeaderHeartbeat();
-      releaseLeadership();
-      becomeFollower();
+      cancelled = true;
     };
   }, []);
 
-  const sanitizedVisitors = visitors.map((v, i) => {
-    const latOffset = (((i * 17) % 9) - 4) * 0.015;
-    const lngOffset = (((i * 31) % 9) - 4) * 0.015;
-    return {
-      ...v,
-      city: "Bengaluru",
-      country: "India",
-      countryCode: "IN",
-      latitude: 12.9716 + latOffset,
-      longitude: 77.5946 + lngOffset,
-    };
-  });
+  const visitors = useMemo(() => {
+    if (!currentVisitor) {
+      return [];
+    }
 
-  const sanitizedCurrentVisitor = currentVisitor ? {
-    ...currentVisitor,
-    city: "Bengaluru",
-    country: "India",
-    countryCode: "IN",
-    latitude: 12.9716,
-    longitude: 77.5946,
-  } : null;
+    return sampleVisitors(currentVisitor);
+  }, [currentVisitor]);
 
   return {
-    visitors: sanitizedVisitors,
-    currentVisitor: sanitizedCurrentVisitor,
-    isConnected,
+    visitors,
+    currentVisitor,
+    isConnected: connectionState === "live",
+    connectionState,
     error,
   };
 }
