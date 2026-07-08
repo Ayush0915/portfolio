@@ -192,43 +192,33 @@ export default function AboutContent() {
 
       </div>
 
-      {/* Full-width two-column bio row */}
+          {/* Narrative Section */}
       <TimelineContent
         as="div"
         animationNum={facts.length + 8}
         timelineRef={sectionRef}
         customVariants={fadeVariants}
-        className="mt-12 grid gap-8 text-zinc-400 leading-relaxed sm:grid-cols-2"
+        className="mt-16 grid gap-10 text-zinc-400 leading-relaxed sm:grid-cols-2 border-t border-zinc-800/80 pt-10"
       >
-        {/* Column 1 */}
-        <p className="text-[13px]">
-          I&apos;m curious about how{" "}
-          <span className="font-accent text-[17px] text-zinc-200 not-italic">
-            neural models
-          </span>{" "}
-          actually represent knowledge under the hood — not just using third-party APIs, but fine-tuning{" "}
-          <span className="font-accent text-[16px] text-indigo-300 italic">
-            Transformers
-          </span>
-          {" "}and engineering complex{" "}
-          <span className="font-accent text-[16px] text-indigo-300 italic">
-            agentic pipelines
-          </span>{" "}
-          using PyTorch, LangChain, and vector indices to produce reliable production inference.
-        </p>
+        <div>
+          <h3 className="text-lg font-bold text-zinc-200 mb-3 font-sans">The Core Story: Bridging ML with Engineering</h3>
+          <p className="text-[13px] mb-4">
+            Growing up as a builder, I realized that many machine learning models remain trapped inside isolated research notebooks. I chose to focus on **Data Science** because I wanted to bridge the gap between statistical probability models and robust, deterministic software engineering.
+          </p>
+          <p className="text-[13px]">
+            To me, an AI system is only as good as its production stability and execution safety. That is why I spend my time constructing isolated sandboxes, implementing static AST syntax check validations, and ensuring backend API pipelines run under <span className="text-amber-400 font-semibold font-mono">200ms</span>.
+          </p>
+        </div>
 
-        {/* Column 2 */}
-        <p className="text-[13px]">
-          I believe the next wave of software belongs to developers who can bridge the gap between statistical ML models and deterministic software engineering. That&apos;s why I focus on building{" "}
-          <span className="font-accent text-[17px] text-zinc-200 not-italic">
-            pipelines that measure
-          </span>{" "}
-          real-world performance — grounding LLMs, structuring unstructured outputs, and optimizing latency to under{" "}
-          <span className="font-accent text-[16px] text-amber-300 italic">
-            200ms
-          </span>{" "}
-          for live applications.
-        </p>
+        <div>
+          <h3 className="text-lg font-bold text-zinc-200 mb-3 font-sans">What Excites Me & Current Focus</h3>
+          <p className="text-[13px] mb-4">
+            I am fascinated by **Agentic AI** — workflows that go beyond a single prompt-response to coordinate multiple specialized agents (like CodeVerdict's 4 async agents reviewing code concurrently). Building resilient, grounded retrieval systems represents the future of software development.
+          </p>
+          <p className="text-[13px]">
+            Currently, I am deep-diving into LLM interpretability, declarative pipelines (such as DSPy), and high-throughput backend APIs. I am actively looking for internship and early-career roles where I can help teams build and scale polished, production-ready AI products.
+          </p>
+        </div>
       </TimelineContent>
     </div>
   );

@@ -20,6 +20,11 @@ export interface Project {
   githubUrl?: string;
   meta?: string;
   description?: string;
+  problem?: string;
+  solution?: string;
+  challenges?: string;
+  metrics?: string[];
+  architecture?: string;
 }
 
 export interface SkillGroup {
@@ -34,6 +39,27 @@ export interface ContactInfo {
   linkedin?: string;
   linkedinUrl?: string;
   email: string;
+}
+
+export interface Experience {
+  role: string;
+  organization: string;
+  period: string;
+  location: string;
+  bullets: string[];
+  stack?: string[];
+}
+
+export interface Achievement {
+  title: string;
+  period: string;
+  description: string;
+  category: "academic" | "leadership" | "award";
+}
+
+export interface FAQ {
+  question: string;
+  answer: string;
 }
 
 // ─── Contact ─────────────────────────────────────────────────────────────────
@@ -89,6 +115,13 @@ export const projects: Project[] = [
     meta: "Multi-agent AI code review system",
     description:
       "A multi-agent AI system that reviews pull requests the way a team of specialists would — one agent for security, one for quality, one for performance, one for test coverage — running concurrently and merging their findings into one verdict.",
+    problem: "Generic LLM code reviews often output unstructured, hallucinated suggestions and overlook project-specific security rules or static analysis findings.",
+    solution: "We designed a modular multi-agent system where 4 specialized async agents run concurrently under isolated error boundaries, grounded by a secure-coding guidelines vector store.",
+    challenges: "Handling concurrent execution crashes of separate agents without failing the entire request, and ensuring static security scanner findings (Bandit) merge cleanly into final LLM feedback.",
+    metrics: [
+      "87.5% Precision & 100% Recall achieved against a labeled pull request evaluation benchmark suite.",
+      "Agent execution and validation pipeline runs concurrently in under 12 seconds for typical pull requests."
+    ],
     bullets: [
       "Built a multi-agent workflow with 4 specialized async agents (Security, Quality, Performance, Test Coverage) using Python asyncio, with isolated error handling per agent.",
       "Built a RAG pipeline with Sentence Transformer embeddings and FAISS vector search to ground agent outputs in secure-coding reference docs.",
@@ -106,6 +139,13 @@ export const projects: Project[] = [
     meta: "English-to-SQL data assistant",
     description:
       "A memory-optimized full-stack app that turns plain-English questions into execution-safe SQL, runs them in an isolated DuckDB sandbox, and explains the result in human language.",
+    problem: "Most NL-to-SQL systems require heavy embedding models and vector databases (like ChromaDB), easily exceeding memory limits (e.g., Render's 512MB RAM free tier), and are prone to destructive SQL injections.",
+    solution: "We replaced the database schema vector indexing with a zero-dependency token-matching algorithm and locked execution inside an isolated read-only DuckDB session container.",
+    challenges: "Resolving race conditions on concurrent user database uploads without keeping databases in heap memory, and implementing robust AST parsing to block DDL/DML mutation queries.",
+    metrics: [
+      "Reduced system RAM footprint to only ~60MB RAM baseline, enabling successful free-tier deployments.",
+      "Hardened execution safety via AST whitelisting and 5-second query timeouts."
+    ],
     bullets: [
       "Built a natural-language-to-SQL workflow that accepts plain-English prompts and generates safe SQL for structured datasets.",
       "Ran queries inside an isolated DuckDB sandbox, so results stay session-scoped and the execution surface stays tight.",
@@ -122,6 +162,13 @@ export const projects: Project[] = [
     meta: "ML pipeline for digital behavior insights",
     description:
       "An end-to-end ML system that turns raw digital-behavior data into actionable wellness insights — clustering users into risk profiles and visualizing patterns instead of just logging screen time.",
+    problem: "Traditional screen-time trackers show raw numbers but fail to identify underlying psychological behavior profiles or segment high-risk profiles.",
+    solution: "Built a complete machine learning pipeline that runs K-Means clustering over normalized multi-dimensional behavior features and generates interactive dashboards.",
+    challenges: "Normalizing sparse, multi-modal data containing high variance and building low-latency endpoints for real-time risk profile scoring.",
+    metrics: [
+      "Achieved ~85% clustering consistency (silhouette score) across risk-profile groups.",
+      "Feature engineering cut intra-cluster variance by ~30% and API endpoints average under 200ms latency."
+    ],
     bullets: [
       "Built an end-to-end ML pipeline — data prep, feature engineering, training, evaluation — using K-Means to segment users into 3 behavioral risk profiles (~85% consistency).",
       "Engineered 4 behavioral metrics from structured and unstructured data, cutting intra-cluster variance by ~30% through feature normalization.",
@@ -138,6 +185,13 @@ export const projects: Project[] = [
     meta: "AI resume intelligence platform",
     description:
       "An AI-powered resume coach — scores your resume against a job description, points out the exact gaps, and uses an LLM to rewrite weak bullets, generate interview questions, and draft a LinkedIn summary.",
+    problem: "Standard ATS keyword matching is brittle, penalizing candidates who describe identical skills with slightly different terminology.",
+    solution: "Utilized semantic similarity models (all-MiniLM-L6-v2) for context-aware resume grading alongside real-time job feed matches and LLM-powered bullet optimization.",
+    challenges: "Handling real-time web scraping latency of job listings and optimizing the LLM bullet-rewriting chain to execute under 500ms.",
+    metrics: [
+      "Inference time of rewriting tools and semantic scorer optimized to under 500ms.",
+      "ATS similarity matching aligns with human expert grading at ~90% consistency."
+    ],
     bullets: [
       "Built an ATS compatibility scorer using semantic similarity (all-MiniLM-L6-v2) instead of plain keyword matching, so it measures meaning, not just overlap.",
       "Added skill-gap analysis that ranks missing keywords by how critical they are to the target role.",
@@ -152,22 +206,127 @@ export const projects: Project[] = [
 export const skillGroups: SkillGroup[] = [
   {
     category: "Languages",
-    skills: ["Python", "C++", "C", "SQL", "Java", "TypeScript", "JavaScript", "Go", "R"],
+    skills: ["Python", "C++", "C", "SQL", "TypeScript", "JavaScript", "Go", "R"],
   },
   {
-    category: "AI / ML & NLP",
-    skills: ["PyTorch", "TensorFlow", "scikit-learn", "Transformers", "LLMs", "LangChain", "LlamaIndex", "RAG", "Agentic AI", "Deep Learning", "NLP", "Computer Vision", "Fine-tuning", "K-Means", "XGBoost", "Hugging Face"],
+    category: "AI/ML & Deep Learning",
+    skills: ["PyTorch", "TensorFlow", "scikit-learn", "Hugging Face", "K-Means", "Seaborn"],
+  },
+  {
+    category: "LLMs & Agentic Systems",
+    skills: ["LLMs", "LangChain", "LlamaIndex", "RAG", "Agentic AI", "Transformers"],
+  },
+  {
+    category: "Frontend",
+    skills: ["React", "Next.js", "TypeScript", "JavaScript", "HTML/CSS"],
   },
   {
     category: "Backend & Databases",
-    skills: ["FastAPI", "Flask", "Node.js", "Express.js", "MongoDB", "PostgreSQL", "MySQL", "Redis", "Supabase", "Git", "GitHub"],
+    skills: ["FastAPI", "Flask", "Node.js", "Express.js", "MongoDB", "PostgreSQL", "MySQL", "Redis", "Supabase"],
   },
   {
-    category: "Data & Visualization",
-    skills: ["Pandas", "NumPy", "Matplotlib", "Plotly", "Seaborn", "PySpark", "Power BI", "Tableau"],
+    category: "DevOps & Tools",
+    skills: ["Docker", "Kubernetes", "Linux", "AWS", "CI/CD", "Git", "GitHub", "VS Code", "Streamlit"],
+  },
+];
+
+// ─── Experiences ─────────────────────────────────────────────────────────────
+
+export const experiences: Experience[] = [
+  {
+    role: "Core Technical Member",
+    organization: "Google Developer Group (GDG) BIT",
+    period: "2024 – Present",
+    location: "Bangalore, Karnataka",
+    bullets: [
+      "Collaborated in a 5-member core team to architect, build, and deploy the official GDG BIT community platform.",
+      "Spearheaded hands-on workshops and regional events, instructing 1000+ attendees in programming fundamentals, Python, and open-source practices.",
+      "Mentored 10+ junior students in Data Structures, Algorithms, and Object-Oriented Programming (OOP) concepts.",
+    ],
+    stack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Firebase"],
   },
   {
-    category: "Tools & Practices",
-    skills: ["Docker", "Kubernetes", "Linux", "AWS", "CI/CD", "Streamlit", "VS Code", "SDLC", "Agile/Scrum", "EDA"],
+    role: "AI Study Jams Organizer & Mentor",
+    organization: "GDG BIT",
+    period: "2025",
+    location: "Bangalore, Karnataka",
+    bullets: [
+      "Curated learning pathways and organized technical study jams on Artificial Intelligence & Machine Learning for 200+ students.",
+      "Conducted interactive labs demonstrating model fine-tuning, prompt engineering, and basic neural network design.",
+      "Organized amBITion 2.0 hackathon, leading coordination across logistics, prompt selection, and technical grading.",
+    ],
+    stack: ["Python", "scikit-learn", "Hugging Face", "Google Colab"],
+  },
+  {
+    role: "IoT System Developer (Exhibition)",
+    organization: "Bangalore Institute of Technology",
+    period: "2024",
+    location: "Bangalore, Karnataka",
+    bullets: [
+      "Designed and engineered an automated solar panel cleaning mechanism using Arduino microcontrollers and dust feedback sensors.",
+      "Programmed motor driver control loops to automatically trigger cleaning sweeps, increasing energy efficiency constraints.",
+      "Awarded the Consolation Prize in the annual college-wide technical IoT Exhibition.",
+    ],
+    stack: ["C++", "Arduino IDE", "Embedded C", "Hardware Prototyping"],
+  },
+];
+
+// ─── Achievements ────────────────────────────────────────────────────────────
+
+export const achievements: Achievement[] = [
+  {
+    title: "Academic Excellence at BIT",
+    period: "2023 – Present",
+    description: "Maintained a top-tier CGPA of 9.45 in the B.Tech Computer Science (Data Science) branch.",
+    category: "academic",
+  },
+  {
+    title: "Google Developer Group Core Lead",
+    period: "2024 – Present",
+    description: "Elected as a Core Technical Lead, driving developer bootcamps and building community tech projects.",
+    category: "leadership",
+  },
+  {
+    title: "IoT Exhibition Consolation Prize",
+    period: "2024",
+    description: "Honored with a consolation prize for the automated solar panel dust-cleaning feedback loop system.",
+    category: "award",
+  },
+];
+
+// ─── Currently Exploring ─────────────────────────────────────────────────────
+
+export const currentlyExploring = [
+  {
+    topic: "LLM Interpretability",
+    description: "Understanding attention weight activation states and semantic mapping under the hood.",
+    status: "Active",
+  },
+  {
+    topic: "DSPy (Declarative Self-Improving Pipelines)",
+    description: "Replacing traditional prompt engineering with programmatic model instruction optimization.",
+    status: "Active",
+  },
+  {
+    topic: "Go / Backend Systems",
+    description: "Exploring Go's concurrency patterns for high-throughput, low-latency API development.",
+    status: "Up Next",
+  },
+];
+
+// ─── FAQs ────────────────────────────────────────────────────────────────────
+
+export const faqs: FAQ[] = [
+  {
+    question: "Do you have commercial software experience?",
+    answer: "No, I don't have professional work experience in a company yet. I lead with my projects (such as CodeVerdict and AskSQL) and academic excellence to prove my ability to ship production-ready, clean, and optimized software.",
+  },
+  {
+    question: "What is your main focus as an AI/ML Engineer?",
+    answer: "I bridge the gap between statistical ML models and deterministic software engineering. I focus on multi-agent workflows, optimized RAG pipelines, and latency reductions (targeting under 200ms API speeds).",
+  },
+  {
+    question: "Are you open to relocation or remote work?",
+    answer: "Yes, I am open to remote roles, as well as relocation to major tech hubs (including Bangalore, Hyderabad, Pune, and others) for internships or full-time roles starting in 2027.",
   },
 ];
