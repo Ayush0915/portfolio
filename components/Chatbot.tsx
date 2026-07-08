@@ -26,6 +26,7 @@ export function Chatbot() {
   const [uiMessages, setUiMessages] = useState<UIMessage[]>([]);
   const [isListening, setIsListening] = useState(false);
   const [showClearPreview, setShowClearPreview] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // ─── Hooks ────────────────────────────────────────────────────────────
   const { canSendMessage, getStatus } = useRateLimit(100); // 100ms delay to prevent double-clicks
@@ -42,6 +43,8 @@ export function Chatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+  const chatbotRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // ─── Effects ───────────────────────────────────────────────────────────
 
@@ -64,12 +67,35 @@ export function Chatbot() {
   }, [uiMessages, isOpen]);
 
   /**
-   * Focus input field when chatbot opens.
+   * Focus input field when chatbot opens and reset unread count.
    */
   useEffect(() => {
     if (isOpen) {
+      setUnreadCount(0);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
+  }, [isOpen]);
+
+  /**
+   * Close chatbot on click outside.
+   */
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        isOpen &&
+        chatbotRef.current &&
+        !chatbotRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isOpen]);
 
   /**
@@ -161,6 +187,10 @@ export function Chatbot() {
 
         setUiMessages((prev) => [...prev, assistantMessageObj]);
         addMessage('assistant', response.message);
+
+        if (!isOpen) {
+          setUnreadCount((prev) => prev + 1);
+        }
       } else {
         // Show error message
         const errorMessage = response.error || 'Failed to get response';
@@ -264,6 +294,7 @@ export function Chatbot() {
 
             {/* Floating Button */}
             <motion.button
+              ref={buttonRef}
               onClick={() => setIsOpen(true)}
               className="relative flex items-center justify-center w-14 h-14 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg transition-all duration-200 hover:scale-110 active:scale-95"
               aria-label="Open chatbot"
@@ -272,14 +303,14 @@ export function Chatbot() {
               whileTap={{ scale: 0.95 }}
             >
               <MessageCircle size={24} />
-              {getMessageCount() > 0 && (
+              {unreadCount > 0 && (
                 <motion.span
                   className="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 200, damping: 10 }}
                 >
-                  {getMessageCount() > 9 ? '9+' : getMessageCount()}
+                  {unreadCount > 9 ? '9+' : unreadCount}
                 </motion.span>
               )}
             </motion.button>
@@ -291,6 +322,7 @@ export function Chatbot() {
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
+            ref={chatbotRef}
             className="fixed bottom-4 right-4 z-50 w-full max-w-lg h-[520px] flex flex-col rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl shadow-black/60"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
