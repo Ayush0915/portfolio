@@ -1,103 +1,251 @@
-# Portfolio Site — Upgrade Spec
+# Portfolio — Required Changes
 
-Scope: only changes to the **portfolio website** (`github.com/Ayush0915/portfolio`). Build in one pass, no iteration needed — every item has exact file paths and decisions pre-made.
-
----
-
-## P0 — Do first
-
-### 1. Add a résumé/CV download
-**Problem:** No résumé PDF anywhere on the site — not in hero, navbar, or Contact page. Highest-value missing element for a job-hunting portfolio.
-**Fix:**
-- Add `public/resume.pdf`.
-- Add a "Resume" button in `components/Navbar.tsx` — desktop nav (next to visitor counter, before Contact) and mobile drawer — linking to `/resume.pdf` with `download` attribute and `target="_blank"`.
-- Add a prominent "Download Resume" CTA in `app/page.tsx` hero, next to the existing GitHub/View Projects buttons.
-- Add a resume card to `app/contact/page.tsx` alongside Email/GitHub/LinkedIn (same card style, `FileText` icon from `lucide-react`).
-
-### 2. Fix the broken visitor counter
-**Problem:** `app/api/visits/route.ts` reads/writes `data/visits.json` via `fs/promises`. Vercel serverless functions have a read-only filesystem outside `/tmp`, and `/tmp` doesn't persist across invocations or scale across regions. Every page load POSTs to this route (called from `Navbar.tsx`, mounted globally), so the counter silently resets or the write throws and gets swallowed, returning `count: 0` with a 500.
-**Fix:**
-- Replace file-based storage with **Vercel KV** (`npm install @vercel/kv`).
-- Rewrite `app/api/visits/route.ts`:
-  - `POST`: `const count = await kv.incr("visits:total"); return NextResponse.json({ count })`
-  - `GET`: `const count = (await kv.get<number>("visits:total")) ?? 0; return NextResponse.json({ count })`
-- Add `KV_REST_API_URL` and `KV_REST_API_TOKEN` env vars in Vercel project settings (auto-populated if provisioned from the dashboard).
-- Delete `data/visits.json` and remove the `fs`/`path` imports.
-
-### 3. Present AskSQL as flagship, inside the portfolio
-**Problem:** AskSQL is already wired into `lib/data.ts` (project #2, right after CodeVerdict), so the data layer is fine — but the presentation on-site is bullets-only, same treatment as every other project. It should read as the deepest, most deliberate project on the site.
-**Fix (all inside `app/projects/[slug]/page.tsx` and `lib/data.ts`):**
-- Extend the `Project` interface with optional `caseStudy?: { problem: string; approach: string; tradeoffs: string; result: string }` and `metrics?: { label: string; value: string }[]`.
-- Backfill AskSQL's entry with:
-  - A short case study: problem (querying data without SQL knowledge) → approach (LLM generates SQL, AST-based safety layer validates it before execution, runs in an isolated DuckDB sandbox) → tradeoffs (token-matching retrieval instead of a heavy vector DB, to stay lightweight) → result (memory-optimized, ~60MB baseline RAM, fast free-tier deploy).
-  - A metrics stat-grid: baseline RAM footprint, no local embedding model, session-isolated execution — reuse the same stat-grid component style you'd want for CodeVerdict's 87.5% precision / 100% recall.
-  - A simple numbered-step or SVG diagram of the flow: question → LLM SQL generation → AST safety validation → isolated DuckDB execution → plain-English explanation. The safety-validation step is the most differentiated, interview-worthy part — call it out visually, not just in a bullet.
-- Update the `description` field for AskSQL in `lib/data.ts` to lead with the safety + resource-efficiency angle rather than plain "NL-to-SQL" — that's the differentiator most similar student projects don't have.
-- Do this same case-study/metrics treatment for CodeVerdict too, so the two flagship-tier projects match in depth (don't leave one under-built relative to the other).
+Nothing in your actual repo has been touched. This file documents exactly what to change, with copy-paste-ready code. Apply top to bottom.
 
 ---
 
-## P1 — Do this week
+## 1. Remove the fabricated IoT achievement
 
-### 4. Fix the carousel's fixed-width mobile bug
-**Problem:** `components/ProjectsRail.tsx` hardcodes `const CARD_W = 480;` with no responsive breakpoints. On viewports under ~480px (iPhone SE/13/14 mini, most Android phones), the active card is wider than the screen and gets clipped by the `overflow: hidden` wrapper — the project showcase, the section recruiters look at most, breaks on the most common phone class.
-**Fix:**
-- Mirror the pattern already used correctly in `components/HeroGlobeCard.tsx` (`getGlobeLayout(viewportWidth)`). Extract a shared `hooks/useViewportWidth.ts` from its existing `subscribeToViewport`/`getViewportSnapshot` helpers.
-- Compute `CARD_W`/`CARD_H`/`SIDE_OFFSET` from viewport tiers:
-  - `< 420px`: `CARD_W = 300, CARD_H = 169, SIDE_OFFSET = 320`
-  - `< 768px`: `CARD_W = 380, CARD_H = 214, SIDE_OFFSET = 400`
-  - `>= 768px`: keep existing `480 / 270 / 520`
-- Clamp the `max-w-4xl` text block and project-index grid below the carousel so it doesn't feel oversized relative to the smaller cards on mobile.
+**Why:** Confirmed this was invented content, not something you actually did. It's now removed from the plan entirely — three files, three edits.
 
-### 5. Add OG/Twitter card image + sitemap + robots
-**Problem:** No `sitemap.xml`, no `robots.txt`, no `manifest.json`, no Open Graph/Twitter card image. Sharing the link in a LinkedIn message or recruiting Slack currently renders as bare text with no preview.
-**Fix:**
-- Add `app/opengraph-image.tsx` (Next.js 16 file-based OG image via `ImageResponse`) — 1200×630, dark background matching `zinc-950` theme, name + role + one-line pitch.
-- Add `app/twitter-image.tsx` reusing the same generator.
-- Add `app/sitemap.ts` exporting all static routes (`/`, `/about`, `/projects`, `/projects/[slug]` for each project slug, `/skills`, `/education`, `/contact`) with `lastModified`.
-- Add `app/robots.ts` allowing all crawlers, pointing to the sitemap.
-- Add `app/manifest.ts` (name, short_name, icons — generate `icon-192.png`/`icon-512.png` from the existing favicon, theme_color matching `zinc-950`).
-- Add JSON-LD `Person` structured data in `app/layout.tsx` (name, jobTitle, url, sameAs: [GitHub, LinkedIn]) via `<script type="application/ld+json">` in `<head>`.
+### `lib/data.ts`
 
-### 6. Delete orphaned public assets
-**Problem:** `public/projects/` has ~5MB of screenshots not referenced anywhere in `lib/data.ts` (`owemygod.png`, `menu-decoder1.png`, `movie-book-recommendation.png`, `movie-book-recommendation1.png`, `shopping list.png`, `mesa1.jpg`, `Screenshot 2026-02-28 174132.png`). These still deploy as publicly accessible static files — wasted deploy size, and a discoverable trail of unrelated/abandoned work if someone hits the URL directly.
-**Fix:**
-- Delete every file in `public/projects/` not referenced by an `imageSrc` in `lib/data.ts` (currently only `codeverdict_v3.png`, `asksql.png`, `digital_wellbeing_v2.png`, `careeriq_v2.png` are used).
-- If any are needed later, move them to a local archive folder outside `public/`, not the deployed app.
+**Delete this whole object from the `experiences` array:**
+```ts
+{
+  role: "IoT System Developer (Exhibition)",
+  organization: "Bangalore Institute of Technology",
+  period: "2024",
+  location: "Bangalore, Karnataka",
+  bullets: [
+    "Designed and engineered an automated solar panel cleaning mechanism using Arduino microcontrollers and dust feedback sensors.",
+    "Programmed motor driver control loops to automatically trigger cleaning sweeps, increasing energy efficiency constraints.",
+    "Awarded the Consolation Prize in the annual college-wide technical IoT Exhibition.",
+  ],
+  stack: ["C++", "Arduino IDE", "Embedded C", "Hardware Prototyping"],
+},
+```
 
----
+**Delete this whole object from the `achievements` array:**
+```ts
+{
+  title: "IoT Exhibition Consolation Prize",
+  period: "2024",
+  description: "Honored with a consolation prize for the automated solar panel dust-cleaning feedback loop system.",
+  category: "award",
+},
+```
 
-## P2 — Polish
+### `components/JourneyTimeline.tsx`
 
-### 7. Write a real portfolio README
-**Problem:** `README.md` in the portfolio repo is still the default `create-next-app` boilerplate. If an interviewer opens this repo (common), it currently says nothing about you.
-**Fix:** Replace with a one-line pitch, tech stack, feature list (3D globe, GitHub contributions calendar, AI chatbot grounded in portfolio context, live project showcase), local setup steps, and a link to the live site.
+**Delete the entire IoT card block** (search for the comment `{/* IoT Exhibition */}` — delete from that comment down through its closing `</div>`, roughly 40 lines, right before the section wraps up).
 
-### 8. Carousel accessibility
-**Problem:** `ProjectsRail.tsx` navigation is mouse/touch/wheel-only. No keyboard arrow-key support, no `aria-live` region announcing the active project on change.
-**Fix:**
-- Add `tabIndex={0}` + `onKeyDown` on the carousel section, calling `prev()`/`next()` on `ArrowLeft`/`ArrowRight`.
-- Wrap the `{item.title}` text block in `<div aria-live="polite">` so screen readers announce the active project when it changes.
+**Then update the icon import at the top of the file** — `Award` is only used by that block, so once it's gone the import will fail lint (unused import) unless removed:
+```ts
+// before
+import { Briefcase, GraduationCap, Award, Calendar, MapPin } from "lucide-react";
+// after
+import { Briefcase, GraduationCap, Calendar, MapPin } from "lucide-react";
+```
 
----
+### `lib/portfolio-context.md`
 
-## Checklist
-
-- [ ] 1. Résumé PDF added + linked in navbar, hero, contact
-- [ ] 2. Visitor counter moved to Vercel KV
-- [ ] 3. AskSQL (and CodeVerdict) case study + metrics + diagram built out on project detail pages
-- [ ] 4. Carousel responsive width fix
-- [ ] 5. OG image, sitemap, robots, manifest, JSON-LD added
-- [ ] 6. Orphaned public assets deleted
-- [ ] 7. Portfolio README rewritten
-- [ ] 8. Carousel keyboard nav + aria-live
+This file feeds your AI chatbot's context — if you don't fix it, the chatbot will keep telling site visitors about an award you didn't get. Find and delete this line:
+```
+- **IoT Exhibition — Consolation Prize** — built an automated solar panel cleaning system with Arduino, motor control, and dust-sensor feedback.
+```
 
 ---
 
-## Already solid — don't touch
+## 2. Fix the contact form (currently fake) and route mail to your Gmail
 
-- 3D globe is correctly lazy-loaded via `next/dynamic({ ssr: false })` with a WebGL-support check and responsive sizing tiers in `HeroGlobeCard.tsx`.
-- API keys (Groq/OpenRouter, GitHub) are handled entirely server-side in route handlers — never exposed client-side.
-- Per-page metadata (`title`/`description`) is correctly implemented per-route across About, Projects, Contact, Education, and each project detail page.
-- Mobile navbar (hamburger, drawer, `aria-label`s) is implemented correctly.
-- Heading hierarchy is correct where checked.
+**Why:** `ContactForm.tsx` currently does `await new Promise(resolve => setTimeout(resolve, 1500))` — a fake delay, no `fetch`, no API call. Every submission is silently discarded while the UI shows "sent." This replaces it with a real backend using **Resend** (free tier: 3,000 emails/month, 100/day, and — importantly — you don't need to verify a custom domain to send; Resend's shared `onboarding@resend.dev` address works for sending to any recipient, which is all you need here since it's just routing to your own inbox).
+
+### Step 1 — Get a Resend API key
+1. Sign up free at [resend.com](https://resend.com).
+2. Dashboard → API Keys → Create API Key. Copy it.
+3. No domain verification needed for this use case — you're sending *to* your Gmail, not sending marketing mail *from* a branded domain.
+
+### Step 2 — Install the SDK
+```bash
+npm install resend
+```
+
+### Step 3 — Add the env var
+In `.env.local` (and in Vercel → Project Settings → Environment Variables for production):
+```
+RESEND_API_KEY=re_your_key_here
+CONTACT_TO_EMAIL=ayushbhadani0915@gmail.com
+```
+
+### Step 4 — New file: `app/api/contact/route.ts`
+```ts
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+
+interface ContactPayload {
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const apiKey = process.env.RESEND_API_KEY;
+    const toEmail = process.env.CONTACT_TO_EMAIL;
+
+    if (!apiKey || !toEmail) {
+      console.error("Contact route misconfigured: missing RESEND_API_KEY or CONTACT_TO_EMAIL");
+      return NextResponse.json(
+        { success: false, error: "Contact form is not configured yet. Please reach out via email directly." },
+        { status: 500 }
+      );
+    }
+
+    const body: ContactPayload = await request.json();
+    const { name, email, subject, message } = body;
+
+    if (!name?.trim() || !email?.trim() || !message?.trim()) {
+      return NextResponse.json(
+        { success: false, error: "Name, email, and message are required." },
+        { status: 400 }
+      );
+    }
+    if (!isValidEmail(email)) {
+      return NextResponse.json(
+        { success: false, error: "Please enter a valid email address." },
+        { status: 400 }
+      );
+    }
+
+    const resend = new Resend(apiKey);
+
+    const { error } = await resend.emails.send({
+      from: "Portfolio Contact Form <onboarding@resend.dev>",
+      to: toEmail,
+      replyTo: email,
+      subject: subject?.trim() ? `[Portfolio] ${subject.trim()}` : `[Portfolio] New message from ${name}`,
+      text: `From: ${name} <${email}>\n\n${message}`,
+      html: `
+        <div style="font-family: sans-serif; line-height: 1.6;">
+          <p><strong>From:</strong> ${name} (${email})</p>
+          ${subject ? `<p><strong>Subject:</strong> ${subject}</p>` : ""}
+          <p><strong>Message:</strong></p>
+          <p>${message.replace(/\n/g, "<br/>")}</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error("Resend error:", error);
+      return NextResponse.json(
+        { success: false, error: "Failed to send message. Please try again or email directly." },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Contact route error:", error);
+    return NextResponse.json(
+      { success: false, error: "Something went wrong. Please try again." },
+      { status: 500 }
+    );
+  }
+}
+```
+
+Note the `replyTo: email` — this means when you get the email in your Gmail and hit Reply, it goes straight to the person who contacted you, not back to `onboarding@resend.dev`.
+
+### Step 5 — Replace `handleSubmit` in `components/ContactForm.tsx`
+
+Replace the entire existing `handleSubmit` function with this (keep everything else in the file — state, JSX, styling — unchanged):
+
+```ts
+const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!name || !email || !message) return;
+
+  setIsSubmitting(true);
+  setErrorMessage(null);
+
+  try {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, subject, message }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Failed to send message.");
+    }
+
+    setIsSuccess(true);
+    setName("");
+    setEmail("");
+    setSubject("");
+    setMessage("");
+  } catch (err) {
+    setErrorMessage(
+      err instanceof Error ? err.message : "Something went wrong. Please try again or email me directly."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+```
+
+Add `errorMessage` to the top of the component alongside the existing `useState` declarations (already included above), and render it somewhere visible in the form JSX, e.g. right above the submit button:
+```tsx
+{errorMessage && (
+  <p className="text-sm text-red-400 mb-3">{errorMessage}</p>
+)}
+```
+
+### Step 6 — Verify
+1. `npm run dev`, fill out the form locally, submit.
+2. Check the Gmail inbox tied to `CONTACT_TO_EMAIL` — the message should land within seconds (check spam folder the first time, since it's sending from Resend's shared address rather than a verified domain).
+3. Reply to that email directly and confirm it goes to the sender's address, not `onboarding@resend.dev`.
+4. Once confirmed working locally, add the two env vars in Vercel and redeploy.
+
+---
+
+## 3. Project Index block — redesign options
+
+You said the current block (the "01 / 02 / 03 / 04" list of buttons below the carousel in `components/ProjectsRail.tsx`) isn't landing. Since this is a style call rather than a bug, here are three concrete directions — pick whichever fits your taste, or tell me and I'll build it out fully:
+
+**Option A — Dot/pill indicators only (minimal)**
+Drop the text list entirely. Replace it with a row of small pill-shaped dots under the carousel (like Instagram Stories or a slideshow), active one wider/highlighted. Clicking a dot jumps to that project. Pairs well with the existing prev/next arrows — removes visual duplication since the project name/description already show in the text block beneath the carousel.
+
+**Option B — Thumbnail filmstrip**
+Replace the text-list grid with a horizontal row of small square/rounded thumbnails (mini versions of each project's screenshot) below the carousel. Clicking a thumbnail jumps to that project. More visual, reinforces the image-forward feel of the carousel itself, and scales cleanly to more projects later without the grid awkwardly wrapping.
+
+**Option C — Tab pills with icons**
+A single-row (not 2-column grid) of pill-shaped tabs, one per project, showing just the project name with a small tech-stack icon (e.g. Python/React logo) — no numbers, no "View" label, no description repeated. Closer to how modern SaaS landing pages do a features tab-switcher. Lowest visual weight, reads clean on both desktop and mobile without needing a grid-to-single-column breakpoint at all.
+
+**My default recommendation:** Option A. It removes the redundant text (title/meta are already duplicated in both the index block and the text block below), fixes part of the mobile-overflow issue from the earlier audit for free (dots don't need a fixed pixel width the way the current button grid does), and is the lowest-code-risk change of the three.
+
+---
+
+## Summary checklist
+
+- [ ] Remove IoT block from `lib/data.ts` (experiences + achievements)
+- [ ] Remove IoT block from `components/JourneyTimeline.tsx` + clean up unused `Award` import
+- [ ] Remove IoT line from `lib/portfolio-context.md`
+- [ ] Sign up for Resend, get API key
+- [ ] `npm install resend`
+- [ ] Add `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to `.env.local` and Vercel
+- [ ] Add `app/api/contact/route.ts`
+- [ ] Replace `handleSubmit` in `components/ContactForm.tsx`, add error state + error message UI
+- [ ] Test locally, confirm email lands in Gmail, confirm Reply goes to sender
+- [ ] Redeploy with env vars set in Vercel
+- [ ] Pick a Project Index redesign option (A/B/C) and let me know if you want it built

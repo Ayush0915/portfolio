@@ -3,6 +3,7 @@ import { contact } from "@/lib/data";
 import { Github, Mail, Linkedin, MapPin, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { GitHubContributionsCalendar } from "@/components/GitHubContributionsCalendar";
+import { GithubActivityFeed } from "@/components/GithubActivityFeed";
 import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
@@ -94,11 +95,16 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* GitHub Contributions Graph */}
-      <section className="border-t border-zinc-800/80 pt-12">
-        <h2 className="mb-6 text-lg font-bold text-zinc-250">GitHub Contributions</h2>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/10 p-6">
-          <GitHubContributionsCalendar />
+      {/* GitHub Contributions & Activity */}
+      <section className="border-t border-zinc-800/80 pt-12 grid gap-10 lg:grid-cols-[7fr_5fr]">
+        <div>
+          <h2 className="mb-6 text-lg font-bold text-zinc-250">GitHub Contributions</h2>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/10 p-6">
+            <GitHubContributionsCalendar />
+          </div>
+        </div>
+        <div>
+          <GithubActivityFeed username={contact.github} />
         </div>
       </section>
     </div>
