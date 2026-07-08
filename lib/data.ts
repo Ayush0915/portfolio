@@ -97,6 +97,23 @@ export const projects: Project[] = [
     ],
   },
   {
+    name: "AskSQL",
+    slug: "asksql",
+    stack: ["Python", "FastAPI", "DuckDB", "Groq / Llama 3.3", "React", "Tailwind CSS"],
+    href: "https://askmysql.netlify.app",
+    githubUrl: "https://github.com/Ayush0915/AskSQL",
+    imageSrc: "/projects/asksql.png",
+    meta: "English-to-SQL data assistant",
+    description:
+      "A memory-optimized full-stack app that turns plain-English questions into execution-safe SQL, runs them in an isolated DuckDB sandbox, and explains the result in human language.",
+    bullets: [
+      "Built a natural-language-to-SQL workflow that accepts plain-English prompts and generates safe SQL for structured datasets.",
+      "Ran queries inside an isolated DuckDB sandbox, so results stay session-scoped and the execution surface stays tight.",
+      "Added plain-English explanations plus tabular results to make the database output understandable for non-technical users.",
+      "Shipped a lightweight React + FastAPI experience optimized for fast free-tier deployment and low memory usage.",
+    ],
+  },
+  {
     name: "Digital Wellbeing Intelligence System",
     slug: "digital-wellbeing-intelligence",
     stack: ["Python", "scikit-learn", "Plotly", "FastAPI", "NLP"],
