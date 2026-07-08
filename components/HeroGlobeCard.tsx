@@ -106,7 +106,7 @@ export function HeroGlobeCard() {
   const globeLayout = getGlobeLayout(viewportWidth);
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const focusedSessionRef = useRef<string | null>(null);
-  const { visitors, currentVisitor, connectionState, error } = useLiveVisitors();
+  const { visitors, currentVisitor, connectionState } = useLiveVisitors();
 
   const markerData = useMemo<MarkerPoint[]>(() => {
     const seen = new Map<string, MarkerPoint>();
@@ -307,11 +307,11 @@ export function HeroGlobeCard() {
           {greeting}
         </p>
 
-        {error && (
-          <p className="mt-2 text-center text-[11px] text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
-            Realtime credentials unavailable, showing a stable local preview.
-          </p>
-        )}
+        <p className="mt-2 text-center text-[11px] text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+          {connectionState === "live"
+            ? "Realtime visitor data is active."
+            : "Realtime data is unavailable here, so this preview uses local signals."}
+        </p>
       </div>
     </motion.aside>
   );
