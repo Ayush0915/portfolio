@@ -1,55 +1,39 @@
-# Portfolio — Remaining Changes (Prompt List)
+# Prompt — Fix Vercel Build Error (twitter-image.tsx)
 
-Simple, direct prompts for each remaining fix. Hand these to your coding agent one at a time, or all at once in one session.
-
----
-
-## 1. Fix the contact form — connect it to a real backend
-
-> The contact form in `components/ContactForm.tsx` is fake — `handleSubmit` just does a `setTimeout` and shows a fake success message, nothing is actually sent anywhere. Fix this by creating a real `app/api/contact/route.ts` using the `resend` npm package to email submissions to `ayushbhadani0915@gmail.com`, with `replyTo` set to the sender's email so replies go directly to them. Update `handleSubmit` in `ContactForm.tsx` to actually `fetch("/api/contact")` and handle success/error states properly, including a visible error message in the UI. Add `RESEND_API_KEY` and `CONTACT_TO_EMAIL` to `.env.example`.
-
-**After this**, sign up at resend.com, get an API key, and add both `RESEND_API_KEY` and `CONTACT_TO_EMAIL` to Vercel's Production environment variables, then redeploy.
+Paste this to your coding agent as-is.
 
 ---
 
-## 2. Add missing SEO files
-
-> This Next.js portfolio is missing basic SEO infrastructure. Add: `app/sitemap.ts` covering all static routes and project detail pages, `app/robots.ts` allowing all crawlers and pointing to the sitemap, `app/manifest.ts` with name/icons/theme_color matching the site's dark zinc-950 theme, and `app/opengraph-image.tsx` (plus `app/twitter-image.tsx`) generating a 1200x630 social preview image with the site's name, role, and a one-line pitch. Also add JSON-LD Person structured data to `app/layout.tsx`.
-
----
-
-## 3. Delete orphaned/unused images
-
-> The `public/projects/` folder has unused image files not referenced anywhere in `lib/data.ts`: `owemygod.png`, `menu-decoder1.png`, `movie-book-recommendation.png`, `movie-book-recommendation1.png`, `shopping list.png`, `mesa1.jpg`, `Screenshot 2026-02-28 174132.png`, and `codeverdict_v2.png` (superseded by `codeverdict_v3.png`, which is the one actually used). Delete all of these — they're not used by any project entry and are just adding dead weight to the deployed site.
-
----
-
-## 4. Add résumé link to navbar and Contact page
-
-> The résumé download (`/resume.pdf`) is currently only linked from the homepage hero. Add the same "Resume" link/button to `components/Navbar.tsx` (both desktop nav and mobile drawer) and as a card on `app/contact/page.tsx` alongside the existing Email/GitHub/LinkedIn cards, so it's reachable from every page.
-
----
-
-## 5. Fix the carousel's mobile width bug
-
-> `components/ProjectsRail.tsx` hardcodes `CARD_W = 480`, `CARD_H = 270`, and `SIDE_OFFSET = 520` with no responsive breakpoints, which clips the active card on phones under ~480px wide. Make these values responsive using the same viewport-width-tier pattern already used correctly in `components/HeroGlobeCard.tsx`. Use smaller values on narrow viewports (e.g. `CARD_W ~300` under 420px, `~380` under 768px, `480` at 768px and above) so the carousel never overflows on mobile.
-
----
-
-## 6. Remove the Skills Orbit floating animation — replace with a static grid
-
-> Replace the "Skills Orbit" component (`components/ui/skills-orbit.tsx`) used on `app/skills/page.tsx`. Remove the floating/drifting icon animation and the tab-per-category interaction entirely. Instead, render all skill categories at once in a static, scannable grid — a section header per category (Languages, AI/ML & Deep Learning, LLMs & Agentic Systems, Frontend, Backend & Databases, DevOps & Tools) followed by a responsive grid of skill badges underneath, all visible in one scroll with no clicking required. Keep the same badge visual style (rounded icon circle + label, same hover states) and keep pulling icons from the existing `ICONS` map — just remove the motion/animation and the tab-switcher logic.
+> The Vercel build is failing with this Turbopack error:
 >
-> While doing this, also fix the icon mapping bugs in the `ICONS` object in `skills-orbit.tsx` (or wherever it ends up after the rewrite): `"React"` has no entry (only `"React Native"` exists, so plain React currently shows a broken text fallback), `"K-Means"` has no entry, and `"Agentic AI"` has no entry. Add proper icon entries for all three so nothing falls back to a 3-letter text badge.
+> ```
+> ./app/twitter-image.tsx:3:34
+> Next.js can't recognize the exported `runtime` field in route. It mustn't be reexported.
+>   1 | import ImageResponse from "./opengraph-image";
+>   2 |
+> > 3 | export { alt, size, contentType, runtime } from "./opengraph-image";
+> ```
+>
+> The problem: `app/twitter-image.tsx` currently re-exports its `alt`, `size`, `contentType`, and `runtime` config from `./opengraph-image`, and also does `export default ImageResponse` from that same import. Next.js requires these route config exports to be literal values declared directly in the file — it statically parses them at build time without executing code, so re-exporting from a sibling file breaks that. The `export default ImageResponse` line is also wrong on its own: it's importing the default export of the opengraph-image route (which should be an async component function) and using it as this route's default directly, not calling it as a component.
+>
+> Fix `app/twitter-image.tsx` so it no longer imports anything from `./opengraph-image`. Instead:
+> 1. Import `ImageResponse` from `"next/og"` directly (not from the sibling route file).
+> 2. Declare `runtime`, `alt`, `size`, and `contentType` as literal exported constants directly in this file.
+> 3. Add its own `export default async function TwitterImage()` that returns a `new ImageResponse(...)` with its own JSX, matching the same visual style as `opengraph-image.tsx` (dark background matching the site's zinc-950 theme, name + role + one-line pitch), sized 1200x630.
+>
+> To avoid duplicating the JSX between `opengraph-image.tsx` and `twitter-image.tsx`, extract the shared JSX tree and size constant into a plain non-route helper file (e.g. `lib/og-image.tsx`) exporting a regular function/constant. Both `app/opengraph-image.tsx` and `app/twitter-image.tsx` should import the JSX/size from that shared helper, while still declaring their own `runtime`/`alt`/`size`/`contentType` as literal exports at the top of each route file — the config exports must stay literal in each file even though the JSX body is shared.
+>
+> Verify `app/opengraph-image.tsx` follows the same correct pattern (own literal config exports, own `export default async function`, imports `ImageResponse` from `"next/og"`) before considering this done.
+>
+> After the fix, run `npm run build` locally and confirm it completes with no Turbopack errors before pushing.
 
 ---
 
 ## Checklist
 
-- [ ] Contact form real backend (Resend) + Vercel env vars
-- [ ] Sitemap, robots, manifest, OG image, JSON-LD
-- [ ] Delete orphaned images in `public/projects/`
-- [ ] Résumé link in navbar + Contact page
-- [ ] Responsive carousel card width for mobile
-- [ ] Skills Orbit → static grid, animation removed
-- [ ] Fix React / K-Means / Agentic AI icon fallback bugs
+- [ ] `app/twitter-image.tsx` no longer imports anything from `./opengraph-image`
+- [ ] `runtime`, `alt`, `size`, `contentType` declared as literal exports in `twitter-image.tsx`
+- [ ] `twitter-image.tsx` has its own `export default async function` returning `new ImageResponse(...)`
+- [ ] Shared JSX/size (if any) extracted to a non-route helper file, not re-exported between route files
+- [ ] `app/opengraph-image.tsx` double-checked for the same correct pattern
+- [ ] `npm run build` passes locally before pushing
