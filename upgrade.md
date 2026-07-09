@@ -1,16 +1,29 @@
-# Portfolio — Required Changes
+# Portfolio — Fresh Re-Audit + Required Changes
 
-Nothing in your actual repo has been touched. This file documents exactly what to change, with copy-paste-ready code. Apply top to bottom.
+Re-cloned and re-checked the repo and site from scratch. Nothing has been changed in your actual repo — this is documentation only. Status column shows what's already fixed since the last round vs. still open.
 
 ---
 
-## 1. Remove the fabricated IoT achievement
+## 1. Status check — what's fixed since last time
 
-**Why:** Confirmed this was invented content, not something you actually did. It's now removed from the plan entirely — three files, three edits.
+| Item | Status |
+|---|---|
+| Résumé PDF | ✅ Fixed — `public/resume.pdf` exists, linked from the hero on the homepage, opens correctly in a new tab |
+| Contact form (was fake) | ❌ Still broken — `ContactForm.tsx` still has `await new Promise(resolve => setTimeout(resolve, 1500))`, no `fetch`, no `/api/contact` route exists at all |
+| IoT achievement | ❌ Still present everywhere — not removed yet (see section 2) |
+| Sitemap/robots/manifest/OG image | ❌ Still missing |
+| Orphaned images in `public/projects/` | ❌ Still present (~5MB of unused screenshots) |
+| Résumé link in navbar + Contact page | ❌ Only on homepage hero — not in navbar or Contact page yet |
 
-### `lib/data.ts`
+---
 
-**Delete this whole object from the `experiences` array:**
+## 2. Remove the fabricated IoT achievement — completely, from every file
+
+Confirmed still present in **four** places (one more than last time — it's also baked into the chatbot's context file, so the chatbot will actively tell visitors about an award you didn't get until this is fixed):
+
+### `lib/data.ts` — two deletions
+
+Delete this object from the `experiences` array (around line 260):
 ```ts
 {
   role: "IoT System Developer (Exhibition)",
@@ -26,7 +39,7 @@ Nothing in your actual repo has been touched. This file documents exactly what t
 },
 ```
 
-**Delete this whole object from the `achievements` array:**
+Delete this object from the `achievements` array (around line 290):
 ```ts
 {
   title: "IoT Exhibition Consolation Prize",
@@ -36,11 +49,11 @@ Nothing in your actual repo has been touched. This file documents exactly what t
 },
 ```
 
-### `components/JourneyTimeline.tsx`
+### `components/JourneyTimeline.tsx` — one deletion + one import fix
 
-**Delete the entire IoT card block** (search for the comment `{/* IoT Exhibition */}` — delete from that comment down through its closing `</div>`, roughly 40 lines, right before the section wraps up).
+Delete the entire card block starting at the `{/* IoT Exhibition */}` comment (line 110) through its closing `</div>` (roughly line 148) — the whole card, header, bullet list, and tech-tag row.
 
-**Then update the icon import at the top of the file** — `Award` is only used by that block, so once it's gone the import will fail lint (unused import) unless removed:
+Then, since `Award` from `lucide-react` is only used by that block, remove it from the import at the top or the build will warn on an unused import:
 ```ts
 // before
 import { Briefcase, GraduationCap, Award, Calendar, MapPin } from "lucide-react";
@@ -48,204 +61,108 @@ import { Briefcase, GraduationCap, Award, Calendar, MapPin } from "lucide-react"
 import { Briefcase, GraduationCap, Calendar, MapPin } from "lucide-react";
 ```
 
-### `lib/portfolio-context.md`
+### `lib/portfolio-context.md` — one deletion
 
-This file feeds your AI chatbot's context — if you don't fix it, the chatbot will keep telling site visitors about an award you didn't get. Find and delete this line:
+This file is fed directly into your AI chatbot's system context. Delete this line (around line 90):
 ```
 - **IoT Exhibition — Consolation Prize** — built an automated solar panel cleaning system with Arduino, motor control, and dust-sensor feedback.
 ```
+Until this line is gone, the chatbot will keep describing this to anyone who asks it about your achievements — even after you clean up the visible UI.
 
 ---
 
-## 2. Fix the contact form (currently fake) and route mail to your Gmail
+## 3. Remove the "Project Index" block, keep only the hover/click carousel navigation
 
-**Why:** `ContactForm.tsx` currently does `await new Promise(resolve => setTimeout(resolve, 1500))` — a fake delay, no `fetch`, no API call. Every submission is silently discarded while the UI shows "sent." This replaces it with a real backend using **Resend** (free tier: 3,000 emails/month, 100/day, and — importantly — you don't need to verify a custom domain to send; Resend's shared `onboarding@resend.dev` address works for sending to any recipient, which is all you need here since it's just routing to your own inbox).
+**What you asked for:** keep the carousel's existing click-to-navigate side cards + the prev/next counter pill (the part that already works well), remove the separate "Project Index" text list underneath it.
 
-### Step 1 — Get a Resend API key
-1. Sign up free at [resend.com](https://resend.com).
-2. Dashboard → API Keys → Create API Key. Copy it.
-3. No domain verification needed for this use case — you're sending *to* your Gmail, not sending marketing mail *from* a branded domain.
+### `components/ProjectsRail.tsx`
 
-### Step 2 — Install the SDK
-```bash
-npm install resend
-```
+Delete this entire block (roughly lines 179–210 in the current file) — the `"Project Index"` label and the 2-column button grid beneath it:
 
-### Step 3 — Add the env var
-In `.env.local` (and in Vercel → Project Settings → Environment Variables for production):
-```
-RESEND_API_KEY=re_your_key_here
-CONTACT_TO_EMAIL=ayushbhadani0915@gmail.com
-```
-
-### Step 4 — New file: `app/api/contact/route.ts`
-```ts
-import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-
-interface ContactPayload {
-  name: string;
-  email: string;
-  subject?: string;
-  message: string;
-}
-
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const apiKey = process.env.RESEND_API_KEY;
-    const toEmail = process.env.CONTACT_TO_EMAIL;
-
-    if (!apiKey || !toEmail) {
-      console.error("Contact route misconfigured: missing RESEND_API_KEY or CONTACT_TO_EMAIL");
-      return NextResponse.json(
-        { success: false, error: "Contact form is not configured yet. Please reach out via email directly." },
-        { status: 500 }
-      );
-    }
-
-    const body: ContactPayload = await request.json();
-    const { name, email, subject, message } = body;
-
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
-      return NextResponse.json(
-        { success: false, error: "Name, email, and message are required." },
-        { status: 400 }
-      );
-    }
-    if (!isValidEmail(email)) {
-      return NextResponse.json(
-        { success: false, error: "Please enter a valid email address." },
-        { status: 400 }
-      );
-    }
-
-    const resend = new Resend(apiKey);
-
-    const { error } = await resend.emails.send({
-      from: "Portfolio Contact Form <onboarding@resend.dev>",
-      to: toEmail,
-      replyTo: email,
-      subject: subject?.trim() ? `[Portfolio] ${subject.trim()}` : `[Portfolio] New message from ${name}`,
-      text: `From: ${name} <${email}>\n\n${message}`,
-      html: `
-        <div style="font-family: sans-serif; line-height: 1.6;">
-          <p><strong>From:</strong> ${name} (${email})</p>
-          ${subject ? `<p><strong>Subject:</strong> ${subject}</p>` : ""}
-          <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, "<br/>")}</p>
-        </div>
-      `,
-    });
-
-    if (error) {
-      console.error("Resend error:", error);
-      return NextResponse.json(
-        { success: false, error: "Failed to send message. Please try again or email directly." },
-        { status: 502 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Contact route error:", error);
-    return NextResponse.json(
-      { success: false, error: "Something went wrong. Please try again." },
-      { status: 500 }
-    );
-  }
-}
-```
-
-Note the `replyTo: email` — this means when you get the email in your Gmail and hit Reply, it goes straight to the person who contacted you, not back to `onboarding@resend.dev`.
-
-### Step 5 — Replace `handleSubmit` in `components/ContactForm.tsx`
-
-Replace the entire existing `handleSubmit` function with this (keep everything else in the file — state, JSX, styling — unchanged):
-
-```ts
-const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!name || !email || !message) return;
-
-  setIsSubmitting(true);
-  setErrorMessage(null);
-
-  try {
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, subject, message }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.error || "Failed to send message.");
-    }
-
-    setIsSuccess(true);
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
-  } catch (err) {
-    setErrorMessage(
-      err instanceof Error ? err.message : "Something went wrong. Please try again or email me directly."
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-```
-
-Add `errorMessage` to the top of the component alongside the existing `useState` declarations (already included above), and render it somewhere visible in the form JSX, e.g. right above the submit button:
 ```tsx
-{errorMessage && (
-  <p className="text-sm text-red-400 mb-3">{errorMessage}</p>
-)}
+<div className="w-full max-w-4xl px-4 sm:px-8">
+  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+    Project Index
+  </p>
+  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+    {ITEMS.map((card, i) => {
+      const isActive = i === index;
+      return (
+        <button
+          key={card.slug}
+          onClick={() => setIndex(i)}
+          className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
+            isActive
+              ? "border-indigo-500/50 bg-indigo-500/10 text-zinc-100"
+              : "border-zinc-800 bg-zinc-900/50 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900"
+          }`}
+        >
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+              0{i + 1}
+            </p>
+            <p className="truncate text-sm font-semibold">{card.title}</p>
+            <p className="mt-1 truncate text-xs text-zinc-500">{card.meta}</p>
+          </div>
+          <div className="shrink-0 text-xs font-medium text-indigo-300">
+            View
+          </div>
+        </button>
+      );
+    })}
+  </div>
+</div>
 ```
 
-### Step 6 — Verify
-1. `npm run dev`, fill out the form locally, submit.
-2. Check the Gmail inbox tied to `CONTACT_TO_EMAIL` — the message should land within seconds (check spam folder the first time, since it's sending from Resend's shared address rather than a verified domain).
-3. Reply to that email directly and confirm it goes to the sender's address, not `onboarding@resend.dev`.
-4. Once confirmed working locally, add the two env vars in Vercel and redeploy.
+**Nothing else needs to change** — the carousel cards themselves already have `onClick` that calls `prev()`/`next()` when you click a side (non-active) card, and the prev/next chevron pill with the "`X / Y`" counter (further down in the same file, right below the project title/description) stays exactly as-is. Once the block above is removed, that pill + the clickable side cards become the only way to navigate, which is the behavior you said you liked.
+
+**One side effect worth knowing:** without the index list, there's no direct "jump straight to project 4" — someone has to click through via prev/next or click a visible side card. For 4 projects this is a non-issue; if you ever grow past ~6 projects it's worth revisiting with dot indicators (a much lighter-weight jump-to-item control than the current text list), but not needed now.
 
 ---
 
-## 3. Project Index block — redesign options
+## 4. Fresh bugs found this pass
 
-You said the current block (the "01 / 02 / 03 / 04" list of buttons below the carousel in `components/ProjectsRail.tsx`) isn't landing. Since this is a style call rather than a bug, here are three concrete directions — pick whichever fits your taste, or tell me and I'll build it out fully:
+### 4.1 Contact form is still completely fake (unchanged from last audit)
+`handleSubmit` in `ContactForm.tsx` still does a fake 1.5s delay and shows "sent" with no backend call. No `/api/contact` route exists in the repo at all. Every message typed into this form is currently lost. This was already documented with full working code (Resend-based API route + form fix) in the previous md I gave you — it just hasn't been applied yet. Re-apply that when you get to this file.
 
-**Option A — Dot/pill indicators only (minimal)**
-Drop the text list entirely. Replace it with a row of small pill-shaped dots under the carousel (like Instagram Stories or a slideshow), active one wider/highlighted. Clicking a dot jumps to that project. Pairs well with the existing prev/next arrows — removes visual duplication since the project name/description already show in the text block beneath the carousel.
+### 4.2 Leftover placeholder name in a new API route
+`app/api/github/activity/route.ts` sends this request header:
+```ts
+"User-Agent": "rahul-portfolio/1.0"
+```
+Not your name — looks like it was copied from a template or another example without being customized. Not user-visible (it's just an outbound HTTP header), but it's the same category of problem as the IoT content: unreviewed generated code slipping in details that aren't actually yours. Change it to something like `"ayush-portfolio/1.0"`.
 
-**Option B — Thumbnail filmstrip**
-Replace the text-list grid with a horizontal row of small square/rounded thumbnails (mini versions of each project's screenshot) below the carousel. Clicking a thumbnail jumps to that project. More visual, reinforces the image-forward feel of the carousel itself, and scales cleanly to more projects later without the grid awkwardly wrapping.
+### 4.3 New "Live GitHub Activity" feed — placement worth reconsidering
+This new feature (`components/GithubActivityFeed.tsx`) is well-built — server-side fetch through your own API route (so no client-side GitHub rate-limit exposure), proper loading skeleton, graceful empty state if the API fails. No bug here. But it's placed on the **Contact page** (`app/contact/page.tsx`), which is an odd information-architecture choice — someone arriving at Contact is there to reach out, not browse your recent commits. Consider moving it to the homepage or an About/Projects context instead, where GitHub activity reinforces "I'm actively building" alongside the work itself.
 
-**Option C — Tab pills with icons**
-A single-row (not 2-column grid) of pill-shaped tabs, one per project, showing just the project name with a small tech-stack icon (e.g. Python/React logo) — no numbers, no "View" label, no description repeated. Closer to how modern SaaS landing pages do a features tab-switcher. Lowest visual weight, reads clean on both desktop and mobile without needing a grid-to-single-column breakpoint at all.
-
-**My default recommendation:** Option A. It removes the redundant text (title/meta are already duplicated in both the index block and the text block below), fixes part of the mobile-overflow issue from the earlier audit for free (dots don't need a fixed pixel width the way the current button grid does), and is the lowest-code-risk change of the three.
+### 4.4 Still-open items from the original audit (unchanged, listed for completeness)
+- No `sitemap.xml`, `robots.txt`, `manifest.json`, or Open Graph/Twitter card image — link previews on LinkedIn/Slack still render as bare text.
+- ~5MB of orphaned screenshots still sitting in `public/projects/` (`owemygod.png`, `menu-decoder1.png`, `movie-book-recommendation.png`, `movie-book-recommendation1.png`, `shopping list.png`, `mesa1.jpg`, a raw `Screenshot 2026-02-28...png`) — none referenced in `lib/data.ts`, still publicly accessible if someone hits the URL directly.
+- Résumé link only exists in the homepage hero — not yet in the navbar or on the Contact page, so it's not reachable from every page the way a résumé CTA should be.
+- Carousel is still fixed-width (`CARD_W = 480`) with no responsive breakpoints — will still clip on phones under ~480px wide (iPhone SE/13/14 mini, most Android phones). This one didn't get worse or better, just hasn't been touched.
 
 ---
 
-## Summary checklist
+## 5. Checklist
 
-- [ ] Remove IoT block from `lib/data.ts` (experiences + achievements)
-- [ ] Remove IoT block from `components/JourneyTimeline.tsx` + clean up unused `Award` import
-- [ ] Remove IoT line from `lib/portfolio-context.md`
-- [ ] Sign up for Resend, get API key
-- [ ] `npm install resend`
-- [ ] Add `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to `.env.local` and Vercel
-- [ ] Add `app/api/contact/route.ts`
-- [ ] Replace `handleSubmit` in `components/ContactForm.tsx`, add error state + error message UI
-- [ ] Test locally, confirm email lands in Gmail, confirm Reply goes to sender
-- [ ] Redeploy with env vars set in Vercel
-- [ ] Pick a Project Index redesign option (A/B/C) and let me know if you want it built
+**IoT removal**
+- [ ] Delete IoT block from `lib/data.ts` (experiences array)
+- [ ] Delete IoT block from `lib/data.ts` (achievements array)
+- [ ] Delete IoT card block from `components/JourneyTimeline.tsx`
+- [ ] Remove now-unused `Award` import in `JourneyTimeline.tsx`
+- [ ] Delete IoT line from `lib/portfolio-context.md`
+
+**Project Index removal**
+- [ ] Delete the "Project Index" label + button-grid block from `components/ProjectsRail.tsx`
+- [ ] Confirm carousel still navigates via clicking side cards + the prev/next pill after the block is gone
+
+**Fresh bugs**
+- [ ] Fix `User-Agent` string in `app/api/github/activity/route.ts`
+- [ ] Decide whether to relocate `GithubActivityFeed` off the Contact page
+
+**Still open from before (not new, just not done yet)**
+- [ ] Real contact form backend (Resend + `/api/contact` route — code already written in the previous md)
+- [ ] `sitemap.ts`, `robots.ts`, `manifest.ts`, `opengraph-image.tsx`
+- [ ] Delete orphaned images in `public/projects/`
+- [ ] Add résumé link to navbar + Contact page
+- [ ] Responsive carousel card width for mobile
