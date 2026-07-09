@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ayush Kumar Bhadani — Technical Portfolio
 
-## Getting Started
+A premium, highly-optimized developer portfolio built with **Next.js 16 (App Router)** and **TypeScript**, showcasing data science, AI/ML engineering, and software development projects.
 
-First, run the development server:
+Live Version: [ayushkr-bhadani.vercel.app](https://ayushkr-bhadani.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🚀 Key Features
+
+* **AI Chatbot Agent:** An interactive chat interface grounded in a structured Markdown context of the portfolio, utilizing the **OpenRouter API** to answer queries dynamically.
+* **Interactive Projects Carousel:** A custom, responsive 3D-rail carousel built with **Framer Motion** that adapts card dimensions dynamically to eliminate clipping on mobile viewports.
+* **Real Contact Form:** Backed by a secure Next.js API route (`/api/contact`) that integrates with the **Resend API** to deliver emails with direct reply-to support.
+* **Full SEO Infrastructure:** Includes dynamically generated `sitemap.xml`, `robots.txt`, Web App manifest, JSON-LD Schema (Person structured data), and dynamic OpenGraph/Twitter social preview images (`ImageResponse`).
+* **Visitor Count Tracker:** Integrates a live presence and session-based counter mechanism.
+* **Static Skill Badge Tiers:** Displays technical skill categories grouped vertically with horizontal dividers. Icons are mapped for real-product tools, and conceptual techniques are presented in clean monospace text chips.
+
+---
+
+## 🛠️ Tech Stack
+
+* **Framework:** Next.js (App Router, Turbopack)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS, Lucide Icons, Custom CSS variables
+* **Animations:** Framer Motion
+* **Services:**
+  * [OpenRouter](https://openrouter.ai) (LLM Chatbot)
+  * [Resend](https://resend.com) (Email delivery backend)
+  * [Ably](https://ably.com) (Real-time visitor presence)
+
+---
+
+## ⚙️ Environment Variables Configuration
+
+To run the application locally or deploy it to production (e.g., Vercel), configure the following environment variables. A template is provided in `.env.example`:
+
+```ini
+# ─── AI Chatbot (OpenRouter) ───
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+OPENROUTER_MODEL=openrouter/free # Or any slug from openrouter.ai/models
+
+# ─── Live Visitor Presence (Ably) ───
+ABLY_API_KEY=your_ably_api_key_here
+
+# ─── GitHub Tokens (Optional, lifts API rate limits) ───
+GITHUB_TOKEN=your_github_token_here
+
+# ─── Contact Form (Resend) ───
+RESEND_API_KEY=your_resend_api_key_here
+CONTACT_TO_EMAIL=ayushbhadani0915@gmail.com
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 💻 Local Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/Ayush0915/portfolio.git
+   cd portfolio
+   ```
 
-## Learn More
+2. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Configure Local Environment:**
+   Create a `.env.local` file by copying the template:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Fill in your API keys in `.env.local`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Start Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) with your browser to view the application.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Build for Production:**
+   ```bash
+   npm run build
+   ```
