@@ -1,251 +1,118 @@
-# Portfolio — Required Changes
+# Portfolio — Final Consolidated Action List
 
-Nothing in your actual repo has been touched. This file documents exactly what to change, with copy-paste-ready code. Apply top to bottom.
-
----
-
-## 1. Remove the fabricated IoT achievement
-
-**Why:** Confirmed this was invented content, not something you actually did. It's now removed from the plan entirely — three files, three edits.
-
-### `lib/data.ts`
-
-**Delete this whole object from the `experiences` array:**
-```ts
-{
-  role: "IoT System Developer (Exhibition)",
-  organization: "Bangalore Institute of Technology",
-  period: "2024",
-  location: "Bangalore, Karnataka",
-  bullets: [
-    "Designed and engineered an automated solar panel cleaning mechanism using Arduino microcontrollers and dust feedback sensors.",
-    "Programmed motor driver control loops to automatically trigger cleaning sweeps, increasing energy efficiency constraints.",
-    "Awarded the Consolation Prize in the annual college-wide technical IoT Exhibition.",
-  ],
-  stack: ["C++", "Arduino IDE", "Embedded C", "Hardware Prototyping"],
-},
-```
-
-**Delete this whole object from the `achievements` array:**
-```ts
-{
-  title: "IoT Exhibition Consolation Prize",
-  period: "2024",
-  description: "Honored with a consolation prize for the automated solar panel dust-cleaning feedback loop system.",
-  category: "award",
-},
-```
-
-### `components/JourneyTimeline.tsx`
-
-**Delete the entire IoT card block** (search for the comment `{/* IoT Exhibition */}` — delete from that comment down through its closing `</div>`, roughly 40 lines, right before the section wraps up).
-
-**Then update the icon import at the top of the file** — `Award` is only used by that block, so once it's gone the import will fail lint (unused import) unless removed:
-```ts
-// before
-import { Briefcase, GraduationCap, Award, Calendar, MapPin } from "lucide-react";
-// after
-import { Briefcase, GraduationCap, Calendar, MapPin } from "lucide-react";
-```
-
-### `lib/portfolio-context.md`
-
-This file feeds your AI chatbot's context — if you don't fix it, the chatbot will keep telling site visitors about an award you didn't get. Find and delete this line:
-```
-- **IoT Exhibition — Consolation Prize** — built an automated solar panel cleaning system with Arduino, motor control, and dust-sensor feedback.
-```
+Everything below is confirmed from directly inspecting your repo (including the unmerged `agent/portfolio-polish` branch) — not guesswork. Do these in order.
 
 ---
 
-## 2. Fix the contact form (currently fake) and route mail to your Gmail
+## Step 1 — Merge your fixes into `main` (do this first, unblocks everything else)
 
-**Why:** `ContactForm.tsx` currently does `await new Promise(resolve => setTimeout(resolve, 1500))` — a fake delay, no `fetch`, no API call. Every submission is silently discarded while the UI shows "sent." This replaces it with a real backend using **Resend** (free tier: 3,000 emails/month, 100/day, and — importantly — you don't need to verify a custom domain to send; Resend's shared `onboarding@resend.dev` address works for sending to any recipient, which is all you need here since it's just routing to your own inbox).
+Your IoT removal and Project Index removal are done and sitting on `agent/portfolio-polish`, unmerged. Nothing will show up on `ayushkr-bhadani.vercel.app` until this branch is merged into `main`, because Vercel Production only deploys `main`.
 
-### Step 1 — Get a Resend API key
-1. Sign up free at [resend.com](https://resend.com).
-2. Dashboard → API Keys → Create API Key. Copy it.
-3. No domain verification needed for this use case — you're sending *to* your Gmail, not sending marketing mail *from* a branded domain.
+**Easiest way — GitHub UI:**
+1. Go to `github.com/Ayush0915/portfolio`.
+2. GitHub will likely already show a banner: *"agent/portfolio-polish had recent pushes"* with a **Compare & pull request** button. Click it.
+3. Review the diff (should show the IoT removal + Project Index removal + User-Agent fix, ~2 commits).
+4. Click **Merge pull request** → **Confirm merge**.
+5. Vercel will auto-detect the new `main` commit and start a Production deployment within a few seconds — watch the Deployments tab, wait for it to say **Ready** + **Production**.
+6. Hard-refresh `ayushkr-bhadani.vercel.app` (or open in incognito) and confirm the IoT section and Project Index block are gone.
 
-### Step 2 — Install the SDK
+**Alternative — command line**, if you don't see the PR banner:
 ```bash
-npm install resend
+git checkout main
+git pull origin main
+git merge origin/agent/portfolio-polish
+git push origin main
 ```
-
-### Step 3 — Add the env var
-In `.env.local` (and in Vercel → Project Settings → Environment Variables for production):
-```
-RESEND_API_KEY=re_your_key_here
-CONTACT_TO_EMAIL=ayushbhadani0915@gmail.com
-```
-
-### Step 4 — New file: `app/api/contact/route.ts`
-```ts
-import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-
-interface ContactPayload {
-  name: string;
-  email: string;
-  subject?: string;
-  message: string;
-}
-
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const apiKey = process.env.RESEND_API_KEY;
-    const toEmail = process.env.CONTACT_TO_EMAIL;
-
-    if (!apiKey || !toEmail) {
-      console.error("Contact route misconfigured: missing RESEND_API_KEY or CONTACT_TO_EMAIL");
-      return NextResponse.json(
-        { success: false, error: "Contact form is not configured yet. Please reach out via email directly." },
-        { status: 500 }
-      );
-    }
-
-    const body: ContactPayload = await request.json();
-    const { name, email, subject, message } = body;
-
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
-      return NextResponse.json(
-        { success: false, error: "Name, email, and message are required." },
-        { status: 400 }
-      );
-    }
-    if (!isValidEmail(email)) {
-      return NextResponse.json(
-        { success: false, error: "Please enter a valid email address." },
-        { status: 400 }
-      );
-    }
-
-    const resend = new Resend(apiKey);
-
-    const { error } = await resend.emails.send({
-      from: "Portfolio Contact Form <onboarding@resend.dev>",
-      to: toEmail,
-      replyTo: email,
-      subject: subject?.trim() ? `[Portfolio] ${subject.trim()}` : `[Portfolio] New message from ${name}`,
-      text: `From: ${name} <${email}>\n\n${message}`,
-      html: `
-        <div style="font-family: sans-serif; line-height: 1.6;">
-          <p><strong>From:</strong> ${name} (${email})</p>
-          ${subject ? `<p><strong>Subject:</strong> ${subject}</p>` : ""}
-          <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, "<br/>")}</p>
-        </div>
-      `,
-    });
-
-    if (error) {
-      console.error("Resend error:", error);
-      return NextResponse.json(
-        { success: false, error: "Failed to send message. Please try again or email directly." },
-        { status: 502 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Contact route error:", error);
-    return NextResponse.json(
-      { success: false, error: "Something went wrong. Please try again." },
-      { status: 500 }
-    );
-  }
-}
-```
-
-Note the `replyTo: email` — this means when you get the email in your Gmail and hit Reply, it goes straight to the person who contacted you, not back to `onboarding@resend.dev`.
-
-### Step 5 — Replace `handleSubmit` in `components/ContactForm.tsx`
-
-Replace the entire existing `handleSubmit` function with this (keep everything else in the file — state, JSX, styling — unchanged):
-
-```ts
-const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!name || !email || !message) return;
-
-  setIsSubmitting(true);
-  setErrorMessage(null);
-
-  try {
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, subject, message }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.error || "Failed to send message.");
-    }
-
-    setIsSuccess(true);
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
-  } catch (err) {
-    setErrorMessage(
-      err instanceof Error ? err.message : "Something went wrong. Please try again or email me directly."
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-```
-
-Add `errorMessage` to the top of the component alongside the existing `useState` declarations (already included above), and render it somewhere visible in the form JSX, e.g. right above the submit button:
-```tsx
-{errorMessage && (
-  <p className="text-sm text-red-400 mb-3">{errorMessage}</p>
-)}
-```
-
-### Step 6 — Verify
-1. `npm run dev`, fill out the form locally, submit.
-2. Check the Gmail inbox tied to `CONTACT_TO_EMAIL` — the message should land within seconds (check spam folder the first time, since it's sending from Resend's shared address rather than a verified domain).
-3. Reply to that email directly and confirm it goes to the sender's address, not `onboarding@resend.dev`.
-4. Once confirmed working locally, add the two env vars in Vercel and redeploy.
 
 ---
 
-## 3. Project Index block — redesign options
+## Step 2 — Fix the chatbot (detailed walkthrough)
 
-You said the current block (the "01 / 02 / 03 / 04" list of buttons below the carousel in `components/ProjectsRail.tsx`) isn't landing. Since this is a style call rather than a bug, here are three concrete directions — pick whichever fits your taste, or tell me and I'll build it out fully:
+**Why it's showing canned responses:** the code checks for two environment variables — `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` — and if either is missing, it silently falls back to hardcoded responses instead of calling a real model. This is intentional graceful-degradation behavior in the code (so the chatbot never shows a hard error to a visitor), but it means it's currently running on the fallback in production.
 
-**Option A — Dot/pill indicators only (minimal)**
-Drop the text list entirely. Replace it with a row of small pill-shaped dots under the carousel (like Instagram Stories or a slideshow), active one wider/highlighted. Clicking a dot jumps to that project. Pairs well with the existing prev/next arrows — removes visual duplication since the project name/description already show in the text block beneath the carousel.
+### 2.1 — Get an OpenRouter API key
+1. Go to [openrouter.ai](https://openrouter.ai) and sign up (free).
+2. Go to [openrouter.ai/keys](https://openrouter.ai/keys) → **Create Key**.
+3. Copy the key — it looks like `sk-or-v1-...`. You won't be able to see it again after leaving the page, so copy it now.
 
-**Option B — Thumbnail filmstrip**
-Replace the text-list grid with a horizontal row of small square/rounded thumbnails (mini versions of each project's screenshot) below the carousel. Clicking a thumbnail jumps to that project. More visual, reinforces the image-forward feel of the carousel itself, and scales cleanly to more projects later without the grid awkwardly wrapping.
+### 2.2 — Pick a model
+Your repo's `.env.example` already documents this — any model slug from [openrouter.ai/models](https://openrouter.ai/models) works. Two reasonable choices:
+- **`openrouter/free`** — routes to whatever free model OpenRouter has available at the time. Zero cost, but quality/speed can vary since it's not a fixed model.
+- **`meta-llama/llama-3.1-8b-instruct:free`** — a specific free Llama model, more predictable than the auto-router option. This is a safe default if you just want something that works consistently without paying.
 
-**Option C — Tab pills with icons**
-A single-row (not 2-column grid) of pill-shaped tabs, one per project, showing just the project name with a small tech-stack icon (e.g. Python/React logo) — no numbers, no "View" label, no description repeated. Closer to how modern SaaS landing pages do a features tab-switcher. Lowest visual weight, reads clean on both desktop and mobile without needing a grid-to-single-column breakpoint at all.
+Either works for a portfolio chatbot with light traffic. If you want higher quality and don't mind a small cost, larger models like `meta-llama/llama-3.3-70b-instruct` are also available on OpenRouter (paid, but usually fractions of a cent per message at your expected volume).
 
-**My default recommendation:** Option A. It removes the redundant text (title/meta are already duplicated in both the index block and the text block below), fixes part of the mobile-overflow issue from the earlier audit for free (dots don't need a fixed pixel width the way the current button grid does), and is the lowest-code-risk change of the three.
+### 2.3 — Add the env vars to Vercel
+1. Go to your Vercel dashboard → the `portfolio` project → **Settings** → **Environment Variables**.
+2. Add:
+   | Key | Value |
+   |---|---|
+   | `OPENROUTER_API_KEY` | the `sk-or-v1-...` key you copied |
+   | `OPENROUTER_MODEL` | `openrouter/free` (or your chosen model slug) |
+3. **Important:** when adding each one, Vercel asks which environments it applies to (Production / Preview / Development) — make sure **Production** is checked. It's easy to add a var and only have it apply to Preview by accident, which would explain why it might have worked before on a preview URL but not on your real domain.
+4. Also add the same two vars to your local `.env.local` file (create it from `.env.example` if you don't have one) so the chatbot works when you run `npm run dev` locally too:
+   ```
+   OPENROUTER_API_KEY=sk-or-v1-your-key-here
+   OPENROUTER_MODEL=openrouter/free
+   ```
+   `.env.local` is already gitignored, so this never gets committed.
+
+### 2.4 — Redeploy
+Env var changes don't apply to deployments that already exist — you need a fresh deployment after adding them.
+- Easiest: Vercel dashboard → Deployments → find the latest Production deployment → **⋯** menu → **Redeploy**.
+- Or just push any small commit to `main` (even the merge from Step 1 will trigger this automatically, so if you do Step 1 after adding the env vars, one deploy covers both).
+
+### 2.5 — Verify it's actually using the LLM now
+The fallback responses are fairly convincing for on-script questions ("what are his skills," "tell me about CodeVerdict"), so a simple greeting won't prove much. Test with something the hardcoded mock can't handle, e.g.:
+- *"Compare CodeVerdict and AskSQL's approach to safety"*
+- *"If Ayush had to pick one project to show in a 2-minute interview, which one and why?"*
+
+A hardcoded fallback will either ignore the nuance or fall through to its generic catch-all response. A real model will actually reason about it using the portfolio context. You can also just check the Vercel function logs for that request — if it's using the fallback, you'll still see the `"OpenRouter keys missing"` console warning; if that warning is gone, it's live.
 
 ---
 
-## Summary checklist
+## Step 3 — Remaining fixes not yet done anywhere (main or the agent branch)
 
-- [ ] Remove IoT block from `lib/data.ts` (experiences + achievements)
-- [ ] Remove IoT block from `components/JourneyTimeline.tsx` + clean up unused `Award` import
-- [ ] Remove IoT line from `lib/portfolio-context.md`
-- [ ] Sign up for Resend, get API key
-- [ ] `npm install resend`
-- [ ] Add `RESEND_API_KEY` + `CONTACT_TO_EMAIL` to `.env.local` and Vercel
-- [ ] Add `app/api/contact/route.ts`
-- [ ] Replace `handleSubmit` in `components/ContactForm.tsx`, add error state + error message UI
-- [ ] Test locally, confirm email lands in Gmail, confirm Reply goes to sender
-- [ ] Redeploy with env vars set in Vercel
-- [ ] Pick a Project Index redesign option (A/B/C) and let me know if you want it built
+### 3.1 Contact form (still fake everywhere)
+Still has `await new Promise(resolve => setTimeout(resolve, 1500))`, no real backend. Full working code (Resend-based `/api/contact` route + the `ContactForm.tsx` fix) was already written out in an earlier md — reuse that when you get to this. Quick recap of what's needed:
+- Sign up at [resend.com](https://resend.com), get an API key (free, no domain verification needed since you're sending to your own Gmail).
+- Add `RESEND_API_KEY` and `CONTACT_TO_EMAIL=ayushbhadani0915@gmail.com` to Vercel (Production!) and `.env.local`.
+- Add `app/api/contact/route.ts` and update `handleSubmit` in `ContactForm.tsx` to actually `fetch()` it.
+
+### 3.2 Remove GitHub Activity Feed
+Still exists on both `main` and the agent branch — the earlier removal work didn't include this. Three deletions:
+- Delete `components/GithubActivityFeed.tsx`
+- Delete `app/api/github/activity/route.ts`
+- Remove its import + `<GithubActivityFeed username={contact.github} />` usage from `app/contact/page.tsx`
+
+---
+
+## Updated status table
+
+| Item | Status |
+|---|---|
+| IoT achievement removed | ✅ Done on `agent/portfolio-polish` — **needs merge to `main`** (Step 1) |
+| Project Index block removed | ✅ Done on `agent/portfolio-polish` — **needs merge to `main`** (Step 1) |
+| `User-Agent` placeholder fixed | ✅ Done on `agent/portfolio-polish` — **needs merge to `main`** (Step 1) |
+| Résumé PDF | ✅ Live on `main`/Production already |
+| Chatbot connected to real LLM | 🔲 Fix documented in Step 2 — config only, no code change needed |
+| Contact form | ❌ Still fake — Step 3.1 |
+| GitHub Activity Feed removal | ❌ Not done yet — Step 3.2 |
+| Résumé link in navbar + Contact page | ❌ Still only on homepage hero |
+| Sitemap/robots/manifest/OG image | ❌ Still missing |
+| Orphaned images in `public/projects/` | ❌ Still present |
+| Carousel fixed-width mobile bug | ❌ Still present |
+
+---
+
+## Checklist
+
+- [ ] Merge `agent/portfolio-polish` → `main` (Step 1)
+- [ ] Confirm live domain shows IoT gone + Project Index gone
+- [ ] Get OpenRouter API key
+- [ ] Add `OPENROUTER_API_KEY` + `OPENROUTER_MODEL` to Vercel **Production** env vars
+- [ ] Add same to local `.env.local`
+- [ ] Redeploy
+- [ ] Test chatbot with an off-script question, confirm it's not the canned fallback
+- [ ] Build + apply contact form fix (Resend)
+- [ ] Delete GitHub Activity Feed files

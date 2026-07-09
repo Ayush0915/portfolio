@@ -176,38 +176,6 @@ export default function ProjectsRail() {
         </div>
 
         {/* ── Text + nav ─────────────────────────────────────────── */}
-        <div className="w-full max-w-4xl px-4 sm:px-8">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
-            Project Index
-          </p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {ITEMS.map((card, i) => {
-              const isActive = i === index;
-              return (
-                <button
-                  key={card.slug}
-                  onClick={() => setIndex(i)}
-                  className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
-                    isActive
-                      ? "border-indigo-500/50 bg-indigo-500/10 text-zinc-100"
-                      : "border-zinc-800 bg-zinc-900/50 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900"
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
-                      0{i + 1}
-                    </p>
-                    <p className="truncate text-sm font-semibold">{card.title}</p>
-                    <p className="mt-1 truncate text-xs text-zinc-500">{card.meta}</p>
-                  </div>
-                  <div className="shrink-0 text-xs font-medium text-indigo-300">
-                    View
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
         <div className="mt-8 w-full max-w-xl px-8">
           <AnimatePresence mode="wait">
