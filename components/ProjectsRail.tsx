@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ExternalLink, Github } from "lucide-react";
@@ -17,12 +17,52 @@ const ITEMS = projects.map((p) => ({
   githubUrl: p.githubUrl,
 }));
 
-// 16:9 cards
-const CARD_W = 480;
-const CARD_H = 270; // 480 * 9/16
-const SIDE_OFFSET = 520; // distance between card centers
+function getCardLayout(viewportWidth: number) {
+  if (viewportWidth < 420) {
+    return {
+      width: 300,
+      height: 169,
+      sideOffset: 320,
+    };
+  }
+  if (viewportWidth < 768) {
+    return {
+      width: 380,
+      height: 214,
+      sideOffset: 410,
+    };
+  }
+  return {
+    width: 480,
+    height: 270,
+    sideOffset: 520,
+  };
+}
+
+function subscribeToViewport(callback: () => void) {
+  window.addEventListener("resize", callback);
+  return () => window.removeEventListener("resize", callback);
+}
+
+function getViewportSnapshot() {
+  return window.innerWidth;
+}
+
+function getServerViewportSnapshot() {
+  return 1024;
+}
 
 export default function ProjectsRail() {
+  const viewportWidth = useSyncExternalStore(
+    subscribeToViewport,
+    getViewportSnapshot,
+    getServerViewportSnapshot,
+  );
+  const layout = getCardLayout(viewportWidth);
+  const CARD_W = layout.width;
+  const CARD_H = layout.height;
+  const SIDE_OFFSET = layout.sideOffset;
+
   const [index, setIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const lastWheelTime = useRef(0);
