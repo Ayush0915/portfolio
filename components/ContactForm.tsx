@@ -1,34 +1,49 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { Send, CheckCircle2, Loader2, Sparkles, AlertCircle } from "lucide-react";
 
 export default function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) return;
 
     setIsSubmitting(true);
-    
-    // Simulate API request delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    
-    // Reset state after success
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
+    setError(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      setIsSuccess(true);
+      setName("");
+      setEmail("");
+      setSubject("");
+      setMessage("");
+    } catch {
+      setError("Network error — check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -104,6 +119,21 @@ export default function ContactForm() {
               />
             </div>
 
+            {/* Error message */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="flex items-start gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3"
+                >
+                  <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
+                  <p className="text-xs leading-relaxed text-red-300">{error}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
               <span className="text-[11px] text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                 ⚡ Usually responds in under 2 hours
@@ -146,10 +176,10 @@ export default function ContactForm() {
             </motion.div>
             <h4 className="text-base font-bold text-zinc-100 mb-1">Signal Received Successfully!</h4>
             <p className="text-xs text-zinc-400 max-w-xs leading-relaxed mb-6">
-              Thank you for reaching out. A confirmation has been routed, and I usually get back within 2 hours.
+              Thank you for reaching out. I&apos;ll reply directly to your email — usually within 2 hours.
             </p>
             <button
-              onClick={() => setIsSuccess(false)}
+              onClick={() => { setIsSuccess(false); setError(null); }}
               className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-150 cursor-pointer"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
             >
