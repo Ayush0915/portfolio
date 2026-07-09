@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { contact } from "@/lib/data";
 import { Github, Mail, Linkedin, MapPin, Briefcase, FileText } from "lucide-react";
 import Link from "next/link";
-import { GitHubContributionsCalendar } from "@/components/GitHubContributionsCalendar";
 import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="max-w-5xl space-y-16">
+    <div className="max-w-5xl">
       <div>
         <h1 className="mb-2 text-3xl font-bold tracking-tight text-zinc-100">Contact</h1>
         <p className="mb-10 text-zinc-500">
@@ -106,14 +105,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-
-      {/* GitHub Contributions */}
-      <section className="border-t border-zinc-800/80 pt-12">
-        <h2 className="mb-6 text-lg font-bold text-zinc-250">GitHub Contributions</h2>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/10 p-6">
-          <GitHubContributionsCalendar />
-        </div>
-      </section>
     </div>
   );
 }
