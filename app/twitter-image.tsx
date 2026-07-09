@@ -1,5 +1,11 @@
 import ImageResponse from "./opengraph-image";
 
-export { alt, size, contentType, runtime } from "./opengraph-image";
+export const runtime = "edge";
+export const alt = "Ayush Kumar Bhadani — Portfolio";
+export const size = {
+  width: 1200,
+  height: 630,
+};
+export const contentType = "image/png";
 
 export default ImageResponse;
