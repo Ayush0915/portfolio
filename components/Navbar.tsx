@@ -78,6 +78,15 @@ export default function Navbar() {
           );
         })}
 
+        <a
+          href="/resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-full px-3 py-1 text-sm transition-colors text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+        >
+          Resume
+        </a>
+
         <div className="mx-1 h-4 w-px bg-zinc-700" />
 
         <div className="relative mx-1">
@@ -199,6 +208,21 @@ export default function Navbar() {
                   </motion.div>
                 );
               })}
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, delay: navLinks.length * 0.05 }}
+              >
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-3 text-sm text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200 transition-colors border-t border-zinc-700/40"
+                >
+                  Resume
+                </a>
+              </motion.div>
             </motion.div>
           </>
         )}

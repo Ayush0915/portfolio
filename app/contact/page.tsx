@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { contact } from "@/lib/data";
-import { Github, Mail, Linkedin, MapPin, Briefcase } from "lucide-react";
+import { Github, Mail, Linkedin, MapPin, Briefcase, FileText } from "lucide-react";
 import Link from "next/link";
 import { GitHubContributionsCalendar } from "@/components/GitHubContributionsCalendar";
 import ContactForm from "@/components/ContactForm";
@@ -84,6 +84,19 @@ export default function ContactPage() {
                   </div>
                 </Link>
               )}
+
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/40 px-5 py-4 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)]"
+              >
+                <FileText size={18} className="shrink-0 text-indigo-400" />
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Curriculum Vitae</p>
+                  <p className="text-xs font-semibold text-zinc-200">Download Résumé PDF</p>
+                </div>
+              </a>
             </div>
           </div>
 
