@@ -48,10 +48,6 @@ No action needed on these beyond merging — verified directly in the branch's c
 1. Vercel → Settings → Environment Variables → add `OPENROUTER_MODEL` = `openrouter/free` (or a specific slug like `meta-llama/llama-3.1-8b-instruct:free` from openrouter.ai/models), scoped to **Production**.
 2. Redeploy.
 3. Test with an off-script question (e.g. "compare CodeVerdict and AskSQL's approach to safety") — the hardcoded fallback can't handle that naturally, a real model can.
-
----
-
-
 ---
 
 ## Full checklist
@@ -65,9 +61,9 @@ No action needed on these beyond merging — verified directly in the branch's c
 - [ ] Confirm `RESEND_API_KEY` + `CONTACT_TO_EMAIL` are set in Vercel Production
 
 **Still-open code work:**
-- [ ] Trim `skillGroups` to résumé-justified list (section 3)
-- [ ] Decide Frontend category: remove vs. de-emphasize
-- [ ] Add Data & Visualization + Methodologies categories
-- [ ] Two-tier icon strategy: logos for real tools, text chips for concepts (section 4)
-- [ ] Remove bordered card container in skills grid (section 5)
-- [ ] Delete `GitHubContributionsCalendar.tsx` + remove from Contact page (section 6)
+- [x] Trim `skillGroups` to résumé-justified list (section 3)
+- [x] Decide Frontend category: remove vs. de-emphasize
+- [x] Add Data & Visualization + Methodologies categories
+- [x] Two-tier icon strategy: logos for real tools, text chips for concepts (section 4)
+- [x] Remove bordered card container in skills grid (section 5)
+- [x] Delete `GitHubContributionsCalendar.tsx` + remove from Contact page (section 6)
