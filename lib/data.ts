@@ -201,32 +201,34 @@ export const projects: Project[] = [
   },
 ];
 
-// ─── Skills ───────────────────────────────────────────────────────────────────
-
 export const skillGroups: SkillGroup[] = [
   {
     category: "Languages",
-    skills: ["Python", "C++", "C", "SQL", "TypeScript", "JavaScript", "Go", "R"],
+    skills: ["Python", "C++", "SQL"],
   },
   {
-    category: "AI/ML & Deep Learning",
-    skills: ["PyTorch", "TensorFlow", "scikit-learn", "Hugging Face", "K-Means", "Seaborn"],
+    category: "AI/ML & NLP",
+    skills: ["scikit-learn", "K-Means", "Sentence Transformers", "Prompt Engineering"],
   },
   {
     category: "LLMs & Agentic Systems",
-    skills: ["LLMs", "LangChain", "LlamaIndex", "RAG", "Agentic AI", "Transformers"],
-  },
-  {
-    category: "Frontend",
-    skills: ["React", "Next.js", "TypeScript", "JavaScript", "HTML/CSS"],
+    skills: ["RAG", "Agentic AI"],
   },
   {
     category: "Backend & Databases",
-    skills: ["FastAPI", "Flask", "Node.js", "Express.js", "MongoDB", "PostgreSQL", "MySQL", "Redis", "Supabase"],
+    skills: ["FastAPI", "MongoDB", "MySQL", "DuckDB", "FAISS", "asyncio", "REST APIs"],
   },
   {
     category: "DevOps & Tools",
-    skills: ["Docker", "Kubernetes", "Linux", "AWS", "CI/CD", "Git", "GitHub", "VS Code", "Streamlit"],
+    skills: ["Git", "GitHub"],
+  },
+  {
+    category: "Data & Visualization",
+    skills: ["Pandas", "NumPy", "Plotly", "Power BI"],
+  },
+  {
+    category: "Methodologies",
+    skills: ["Agile/Scrum", "EDA"],
   },
 ];
 
