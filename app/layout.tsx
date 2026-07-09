@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ayushkr-bhadani.vercel.app"),
   title: "Ayush Kumar Bhadani — Portfolio",
   description: "Final-year CS (Data Science) student building AI/ML systems — multi-agent pipelines, RAG, and applied ML.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Ayush Portfolio",
+  },
 };
 
 export default function RootLayout({

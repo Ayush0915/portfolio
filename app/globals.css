@@ -23,3 +23,50 @@ body {
 .font-accent {
   font-family: var(--font-accent);
 }
+
+/* ─── Mobile App Polish ─────────────────────────────────────────────────────── */
+html, body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  scroll-behavior: smooth;
+}
+
+/* Remove the gray tap highlight overlay on mobile browsers */
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* Prevent accidental text highlighting during touch interactions on UI controls */
+nav,
+button,
+a {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Custom scrollbar matching dark mode theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
