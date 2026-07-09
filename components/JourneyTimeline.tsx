@@ -1,7 +1,7 @@
 "use client";
 import { Timeline } from "@/components/ui/timeline";
 import { education, experiences } from "@/lib/data";
-import { Briefcase, GraduationCap, Award, Calendar, MapPin } from "lucide-react";
+import { Briefcase, GraduationCap, Calendar, MapPin } from "lucide-react";
 
 export default function JourneyTimeline() {
   // Combine education and experiences, sorted or organized by timeline
@@ -107,47 +107,6 @@ export default function JourneyTimeline() {
             </div>
           </div>
 
-          {/* IoT Exhibition */}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 backdrop-blur-sm transition-all hover:border-indigo-500/30">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
-                  <Award size={18} />
-                </div>
-                <div>
-                  <h4 className="text-base font-bold text-zinc-100">IoT System Developer & Exhibition Award</h4>
-                  <p className="text-xs text-zinc-400">Bangalore Institute of Technology</p>
-                </div>
-              </div>
-              <div className="flex flex-col items-end text-right">
-                <span className="inline-flex items-center gap-1 text-xs text-amber-300 font-semibold" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
-                  <Calendar size={12} />
-                  2024
-                </span>
-                <span className="inline-flex items-center gap-1 text-[11px] text-zinc-500">
-                  <MapPin size={11} />
-                  Bangalore, India
-                </span>
-              </div>
-            </div>
-            <ul className="space-y-2 mb-4">
-              <li className="flex gap-2 text-sm text-zinc-400 leading-relaxed">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500/60" />
-                Designed and engineered an automated solar panel cleaning mechanism using Arduino microcontrollers and dust feedback sensors.
-              </li>
-              <li className="flex gap-2 text-sm text-zinc-400 leading-relaxed">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500/60" />
-                Awarded the **Consolation Prize** in the annual college-wide technical IoT Exhibition out of dozens of competing teams.
-              </li>
-            </ul>
-            <div className="flex flex-wrap gap-2">
-              {["C++", "Arduino", "Embedded C", "Sensors"].map((tech) => (
-                <span key={tech} className="rounded bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
         </div>
       ),
     },

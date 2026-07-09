@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     const response = await fetch(`https://api.github.com/users/${username}/events/public`, {
       headers: {
         Accept: "application/vnd.github+json",
-        "User-Agent": "rahul-portfolio/1.0",
+        "User-Agent": "ayush-portfolio/1.0",
       },
       next: { revalidate: 60 * 5 },
     });

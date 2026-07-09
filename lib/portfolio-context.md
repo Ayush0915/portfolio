@@ -87,7 +87,6 @@ Analytical thinking, problem solving, technical communication, leadership
 
 - **Academic Excellence** — Maintained an overall CGPA of 9.45 in the CSE (Data Science) branch at BIT.
 - **Core Technical Member, Google Developer Group (GDG)** — part of a 5-member team that built and shipped the official GDG website; ran 3+ workshops and 2+ regional events reaching 1000+ participants.
-- **IoT Exhibition — Consolation Prize** — built an automated solar panel cleaning system with Arduino, motor control, and dust-sensor feedback.
 - **Leadership & Outreach** — organized amBITion 2.0 and AI Study Jams for 200+ participants, represented college at inter-college hackathons, and mentored 10+ junior students on DSA and Python fundamentals.
 
 ---

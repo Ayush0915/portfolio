@@ -257,19 +257,8 @@ export const experiences: Experience[] = [
     ],
     stack: ["Python", "scikit-learn", "Hugging Face", "Google Colab"],
   },
-  {
-    role: "IoT System Developer (Exhibition)",
-    organization: "Bangalore Institute of Technology",
-    period: "2024",
-    location: "Bangalore, Karnataka",
-    bullets: [
-      "Designed and engineered an automated solar panel cleaning mechanism using Arduino microcontrollers and dust feedback sensors.",
-      "Programmed motor driver control loops to automatically trigger cleaning sweeps, increasing energy efficiency constraints.",
-      "Awarded the Consolation Prize in the annual college-wide technical IoT Exhibition.",
-    ],
-    stack: ["C++", "Arduino IDE", "Embedded C", "Hardware Prototyping"],
-  },
 ];
+
 
 // ─── Achievements ────────────────────────────────────────────────────────────
 
@@ -286,13 +275,8 @@ export const achievements: Achievement[] = [
     description: "Elected as a Core Technical Lead, driving developer bootcamps and building community tech projects.",
     category: "leadership",
   },
-  {
-    title: "IoT Exhibition Consolation Prize",
-    period: "2024",
-    description: "Honored with a consolation prize for the automated solar panel dust-cleaning feedback loop system.",
-    category: "award",
-  },
 ];
+
 
 // ─── Currently Exploring ─────────────────────────────────────────────────────
 
