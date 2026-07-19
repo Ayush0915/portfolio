@@ -71,7 +71,7 @@ export default function ContactForm() {
                 <input
                   type="text"
                   required
-                  placeholder="John Doe"
+                  placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-colors focus:border-indigo-500/60"
@@ -84,7 +84,7 @@ export default function ContactForm() {
                 <input
                   type="email"
                   required
-                  placeholder="john@example.com"
+                  placeholder="your.email@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 outline-none transition-colors focus:border-indigo-500/60"

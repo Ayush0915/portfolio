@@ -1,69 +1,469 @@
-# Portfolio — Master Change Log & Remaining Work
+# Mobile UX Improvement Plan for My Portfolio
 
-Single consolidated file replacing every previous md from this session. Freshly verified against the actual repo (`main` + `agent/portfolio-polish` branches) just now, so the status below is accurate as of this check — not carried over assumptions from earlier in the conversation.
+## Goal
+
+The desktop version of my portfolio is polished and visually engaging. However, the mobile experience feels like a compressed version of the desktop instead of being designed specifically for mobile users.
+
+The objective is **not to redesign the portfolio**, but to create a mobile-first experience that feels natural, scrollable, fast, and recruiter-friendly while preserving the current visual identity.
 
 ---
 
-## 0. Merge first — this is still the #1 blocker
+# Current Problems
 
-Everything "done" below is sitting on `agent/portfolio-polish`, which is **still not merged into `main`**. Your live domain (`ayushkr-bhadani.vercel.app`) only deploys from `main`, so none of this is actually live yet, even though the work exists.
+## 1. Mobile Navigation Feels Like a Desktop Website
 
-```bash
-git checkout main
-git pull origin main
-git merge origin/agent/portfolio-polish
-git push origin main
+### Current
+
+Users have to:
+
+1. Open the menu.
+2. Select a section.
+3. Navigate to a new page/route.
+4. Repeat the process for every section.
+
+This interrupts the browsing experience.
+
+### Expected
+
+Mobile users naturally expect to scroll through content.
+
+Instead of:
+
 ```
-Or use the "Compare & pull request" banner on GitHub. Confirm on the live domain afterward that things actually changed before assuming anything below is live.
+Menu
+ ↓
+Journey
+
+↓
+
+Menu
+ ↓
+Projects
+
+↓
+
+Menu
+ ↓
+Contact
+```
+
+They should simply be able to:
+
+```
+Hero
+↓
+
+About
+↓
+
+Projects
+↓
+
+Experience
+↓
+
+Journey
+↓
+
+Visitor Orbit
+↓
+
+Contact
+```
+
+Scrolling should be the primary navigation method.
 
 ---
 
-## 1. Already done (on `agent/portfolio-polish`, just needs the merge above)
+# 2. Convert Mobile Into a Single Scrolling Experience
 
-No action needed on these beyond merging — verified directly in the branch's current code:
+Desktop can continue using the existing layout.
 
-| Item | Verified state |
-|---|---|
-| Fabricated IoT achievement | Removed from `lib/data.ts`, `JourneyTimeline.tsx`, `portfolio-context.md` — zero references left |
-| Project Index block (carousel) | Removed from `ProjectsRail.tsx` |
-| Live GitHub Activity feed | Component, API route, and Contact page usage all deleted |
-| `User-Agent` placeholder header | Fixed |
-| Résumé PDF | Present at `public/resume.pdf`, linked from **both** navbar and Contact page (and homepage hero) |
-| Contact form backend | Real — connects to `/api/contact`, which uses Resend. No longer fake |
-| SEO infrastructure | `sitemap.ts`, `robots.ts`, `manifest.ts`, `opengraph-image.tsx`, `twitter-image.tsx` all present |
-| Orphaned images in `public/projects/` | Cleaned up — only the 4 actually-used images remain (`asksql.png`, `careeriq_v2.png`, `codeverdict_v3.png`, `digital_wellbeing_v2.png`) |
-| Carousel mobile responsiveness | Fixed — `ProjectsRail.tsx` now uses `getCardLayout(viewportWidth)` with real breakpoints instead of a hardcoded `CARD_W = 480` |
-| Skills tab: floating orbit animation | Replaced with a static grid (no more drifting icons) |
-| Skills tab: broken icon fallbacks (React / K-Means / Agentic AI) | Icon map entries added, no longer showing 3-letter text fallbacks for these three specifically |
+On mobile, merge every major section into one continuous page.
 
-**Still worth double-checking after merge:** confirm the `RESEND_API_KEY` and `CONTACT_TO_EMAIL` env vars are actually set in Vercel Production (the code is right, but env vars are config, not code — same category of issue as the chatbot below).
+Current:
+
+```
+/
+Journey
+Projects
+Contact
+```
+
+Recommended:
+
+```
+/
+
+Hero
+
+↓
+
+About
+
+↓
+
+Tech Stack
+
+↓
+
+Projects
+
+↓
+
+Experience
+
+↓
+
+Journey
+
+↓
+
+Visitor Orbit
+
+↓
+
+Contact
+
+↓
+
+Footer
+```
+
+The hamburger menu should simply scroll to the desired section instead of changing routes.
 
 ---
 
-## 2. Still needs work — chatbot LLM connection
+# 3. Navigation
 
-**Status:** not connected in Production. Confirmed cause: `app/api/chat/route.ts` requires both `OPENROUTER_API_KEY` and `OPENROUTER_MODEL`. Your Vercel screenshot showed `OPENROUTER_API_KEY`, `ABLY_API_KEY`, `GITHUB_TOKEN` set — **`OPENROUTER_MODEL` is missing**.
+## Desktop
 
-**Fix (config only, no code change):**
-1. Vercel → Settings → Environment Variables → add `OPENROUTER_MODEL` = `openrouter/free` (or a specific slug like `meta-llama/llama-3.1-8b-instruct:free` from openrouter.ai/models), scoped to **Production**.
-2. Redeploy.
-3. Test with an off-script question (e.g. "compare CodeVerdict and AskSQL's approach to safety") — the hardcoded fallback can't handle that naturally, a real model can.
+Keep the existing navigation.
+
+```
+Home
+Projects
+Journey
+Contact
+```
+
 ---
 
-## Full checklist
+## Mobile
 
-**Unblock everything:**
-- [ ] Merge `agent/portfolio-polish` → `main`
-- [ ] Confirm live domain reflects the merge
+Replace it with a simple hamburger menu.
 
-**Config only (no code):**
-- [ ] Add `OPENROUTER_MODEL` env var in Vercel Production, redeploy, test chatbot
-- [ ] Confirm `RESEND_API_KEY` + `CONTACT_TO_EMAIL` are set in Vercel Production
+```
+☰
+```
 
-**Still-open code work:**
-- [x] Trim `skillGroups` to résumé-justified list (section 3)
-- [x] Decide Frontend category: remove vs. de-emphasize
-- [x] Add Data & Visualization + Methodologies categories
-- [x] Two-tier icon strategy: logos for real tools, text chips for concepts (section 4)
-- [x] Remove bordered card container in skills grid (section 5)
-- [x] Delete `GitHubContributionsCalendar.tsx` + remove from Contact page (section 6)
+Opening it should display:
+
+```
+Home
+
+Projects
+
+Journey
+
+Visitor Orbit
+
+Contact
+
+Resume
+```
+
+Each option should smoothly scroll to its respective section.
+
+Avoid page transitions on mobile.
+
+---
+
+# 4. Hero Section
+
+## Current Problems
+
+- Hero occupies too much vertical space.
+- Users don't immediately realize there is more content below.
+
+## Improvements
+
+Reduce hero height to approximately **75–80vh**.
+
+Structure:
+
+```
+Availability Badge
+
+Name
+
+Role
+
+Short Introduction
+
+CTA Buttons
+
+↓
+
+Animated Scroll Indicator
+```
+
+Add a subtle bouncing arrow encouraging users to continue scrolling.
+
+---
+
+# 5. Visitor Orbit
+
+The feature is visually impressive but takes too much space on mobile.
+
+## Desktop
+
+Keep current implementation.
+
+## Mobile
+
+- Reduce globe size by ~35–40%.
+- Reduce section height.
+- Keep visitor statistics underneath.
+- Maintain animations but reduce intensity.
+
+---
+
+# 6. Journey Timeline
+
+The timeline works well on desktop but leaves excessive whitespace on mobile.
+
+Current:
+
+```
+2025
+
+[Card]
+
+
+
+
+2024
+
+[Card]
+```
+
+Recommended:
+
+```
+2025
+[Card]
+
+↓
+
+2024
+[Card]
+
+↓
+
+2023
+[Card]
+```
+
+Improvements:
+
+- Reduce vertical gaps.
+- Reduce card width.
+- Improve text readability.
+- Optimize spacing between timeline nodes.
+
+---
+
+# 7. Project Cards
+
+Current cards are too large for mobile.
+
+Recommended structure:
+
+```
+Project Image
+
+Project Name
+
+Short Description (2–3 lines)
+
+Technology Chips
+
+GitHub
+
+Live Demo
+```
+
+Avoid overly long descriptions.
+
+Keep project information concise.
+
+---
+
+# 8. Contact Section
+
+Current design is already strong.
+
+Minor improvements:
+
+- Make every contact card full width.
+- Increase tap targets.
+- Improve spacing between cards.
+
+---
+
+# 9. Floating Chat Button
+
+Keep the chat assistant.
+
+However:
+
+- Move it slightly higher.
+- Ensure it never overlaps important content.
+- Maintain adequate bottom spacing.
+
+---
+
+# 10. Responsive Typography
+
+Current headings are oversized for mobile.
+
+Recommended:
+
+## Headings
+
+Desktop
+
+```
+64–72px
+```
+
+Tablet
+
+```
+52px
+```
+
+Mobile
+
+```
+40px
+```
+
+Body Text
+
+```
+16–18px
+```
+
+Improve readability by increasing line height slightly.
+
+---
+
+# 11. Reduce Animation Complexity
+
+Desktop can retain richer animations.
+
+On mobile:
+
+- Reduce animation duration.
+- Disable unnecessary parallax.
+- Avoid excessive motion.
+- Prioritize smooth scrolling and responsiveness.
+
+This improves both perceived performance and battery usage.
+
+---
+
+# 12. Routing Strategy
+
+Instead of creating separate routes:
+
+```
+/
+
+projects
+
+journey
+
+contact
+```
+
+Use a single-page approach:
+
+```
+/
+
+#projects
+
+#journey
+
+#visitor-orbit
+
+#contact
+```
+
+The navigation should simply scroll to anchors.
+
+---
+
+# 13. Mobile Layout Order
+
+Recommended order:
+
+```
+Hero
+
+↓
+
+About
+
+↓
+
+Tech Stack
+
+↓
+
+Featured Projects
+
+↓
+
+Experience
+
+↓
+
+Journey
+
+↓
+
+Visitor Orbit
+
+↓
+
+Contact
+
+↓
+
+Footer
+```
+
+This tells a complete story about the developer in one uninterrupted flow.
+
+---
+
+# Overall Vision
+
+The desktop version should remain an immersive, visually rich experience.
+
+The mobile version should prioritize:
+
+- Continuous scrolling
+- Faster navigation
+- Better readability
+- Reduced animations
+- Smaller visual components
+- Recruiter-friendly information hierarchy
+
+The objective is **not to change the design language**, but to adapt it to how people naturally use mobile devices.
+
+The final result should feel like a premium, mobile-first portfolio where users can land on the homepage and discover everything simply by scrolling from top to bottom without needing to repeatedly open the navigation menu.
