@@ -139,7 +139,7 @@ export default function ProjectsRail() {
 
       {/* ── Carousel — breaks out of max-w-5xl constraint ───────── */}
       <section
-        className="relative flex flex-col items-center pt-6 pb-16 select-none"
+        className="relative flex flex-col items-center pt-2 pb-6 select-none"
         style={{
           width: "100vw",
           marginLeft: "calc(50% - 50vw)",

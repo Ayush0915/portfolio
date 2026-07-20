@@ -47,7 +47,7 @@ export default function RootLayout({
           }}
         />
         <Navbar />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-16 pt-28">
+        <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-10 pt-24">
           {children}
         </main>
         <Footer />

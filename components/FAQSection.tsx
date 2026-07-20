@@ -12,7 +12,7 @@ export default function FAQSection() {
   };
 
   return (
-    <div className="border-t border-zinc-800/80 pt-16 mt-16">
+    <div className="border-t border-zinc-800/80 pt-8 mt-8">
       <div className="mb-8 flex items-center gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
           <HelpCircle size={18} />

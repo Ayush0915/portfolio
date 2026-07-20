@@ -46,15 +46,15 @@ export default function Home() {
   };
 
   return (
-    <div className="relative flex flex-col gap-24 pt-4">
+    <div className="relative flex flex-col gap-8 pt-2">
       {/* ── HERO SECTION ───────────────────────────────────────────── */}
-      <section id="hero" className="relative flex min-h-[80vh] flex-col justify-between pt-6">
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-12 my-auto">
+      <section id="hero" className="relative flex min-h-[75vh] flex-col justify-between pt-2 pb-6">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10 my-auto">
           <div className="flex flex-col justify-center">
-            {/* Availability Status Badge — Single clean rendering (Fix 1) */}
+            {/* Availability Status Badge */}
             <motion.div 
               {...anim(0)}
-              className="mb-6 flex max-w-fit items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.1)]"
+              className="mb-5 flex max-w-fit items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.1)]"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
             >
               <span className="relative flex h-2 w-2">
@@ -67,7 +67,7 @@ export default function Home() {
             {/* Rotating Role Pill */}
             <motion.div 
               {...anim(0.1)} 
-              className="mb-4 h-6 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-400"
+              className="mb-3 h-6 text-xs font-semibold uppercase tracking-[0.25em] text-indigo-400"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
             >
               <AnimatePresence mode="wait">
@@ -84,27 +84,27 @@ export default function Home() {
               </AnimatePresence>
             </motion.div>
 
-            <motion.h1 {...anim(0.2)} className="mb-2 text-[clamp(2.8rem,8vw,5.5rem)] font-black leading-none tracking-tight text-zinc-100">
+            <motion.h1 {...anim(0.2)} className="mb-2 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-none tracking-tight text-zinc-100">
               AYUSH
             </motion.h1>
 
             <motion.h1 
               {...anim(0.3)} 
-              className="mb-8 text-[clamp(2.8rem,8vw,5.5rem)] font-black leading-none tracking-tight text-transparent" 
+              className="mb-6 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-none tracking-tight text-transparent" 
               style={{ WebkitTextStroke: "1.5px rgba(161,161,170,0.35)" }}
             >
               KUMAR BHADANI
             </motion.h1>
 
-            <motion.p {...anim(0.4)} className="mb-10 max-w-lg text-base leading-relaxed text-zinc-400">
+            <motion.p {...anim(0.4)} className="mb-8 max-w-lg text-base leading-relaxed text-zinc-400">
               I am Ayush Kumar Bhadani, a final-year CSE (Data Science) student at Bangalore Institute of Technology (9.45 CGPA). I specialize in building optimized RAG pipelines, multi-agent AI workflows, and Applied ML models that execute reliably in production.
             </motion.p>
 
             {/* CTA Buttons */}
-            <motion.div {...anim(0.5)} className="flex flex-wrap items-center gap-4">
+            <motion.div {...anim(0.5)} className="flex flex-wrap items-center gap-3">
               <a
                 href="#projects"
-                className="flex items-center gap-2 rounded-xl border border-indigo-500/60 bg-indigo-500/10 px-5 py-3 text-sm font-semibold text-indigo-300 transition-all duration-300 hover:bg-indigo-500/20 hover:border-indigo-400 hover:shadow-[0_0_18px_rgba(99,102,241,0.35)] min-h-[44px]"
+                className="flex items-center gap-2 rounded-xl border border-indigo-500/60 bg-indigo-500/10 px-5 py-2.5 text-sm font-semibold text-indigo-300 transition-all duration-300 hover:bg-indigo-500/20 hover:border-indigo-400 hover:shadow-[0_0_18px_rgba(99,102,241,0.35)] min-h-[44px]"
                 style={{ fontFamily: "var(--font-jetbrains-mono)" }}
               >
                 View Projects
@@ -115,7 +115,7 @@ export default function Home() {
                 href={contact.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-3 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:border-zinc-500 hover:text-zinc-100 min-h-[44px]"
+                className="flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:border-zinc-500 hover:text-zinc-100 min-h-[44px]"
                 style={{ fontFamily: "var(--font-jetbrains-mono)" }}
               >
                 <Github size={15} />
@@ -126,7 +126,7 @@ export default function Home() {
                 href="/resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900/60 px-5 py-3 text-sm font-semibold text-zinc-400 transition-all duration-300 hover:border-zinc-600 hover:text-zinc-200 min-h-[44px]"
+                className="flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900/60 px-5 py-2.5 text-sm font-semibold text-zinc-400 transition-all duration-300 hover:border-zinc-600 hover:text-zinc-200 min-h-[44px]"
                 style={{ fontFamily: "var(--font-jetbrains-mono)" }}
               >
                 <FileText size={15} />
@@ -134,12 +134,12 @@ export default function Home() {
               </a>
             </motion.div>
 
-            {/* Inline Social Icons for Quick Contact */}
-            <motion.div {...anim(0.6)} className="mt-8 flex items-center gap-5 border-t border-zinc-800/60 pt-6 max-w-sm">
+            {/* Inline Social Icons */}
+            <motion.div {...anim(0.6)} className="mt-6 flex items-center gap-5 border-t border-zinc-800/60 pt-5 max-w-sm">
               <span className="text-xs uppercase tracking-widest text-zinc-500 font-semibold" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                 Find Me On:
               </span>
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <a 
                   href={contact.githubUrl}
                   target="_blank" 
@@ -171,12 +171,12 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Clean Highlights Card (Replaces Visitor Orbit Widget) */}
+          {/* Highlights Card */}
           <motion.div 
             {...anim(0.4)}
-            className="w-full rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-sm shadow-xl space-y-6"
+            className="w-full rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm shadow-xl space-y-5"
           >
-            <div className="flex items-center gap-3 border-b border-zinc-800/80 pb-4">
+            <div className="flex items-center gap-3 border-b border-zinc-800/80 pb-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
                 <BrainCircuit size={22} />
               </div>
@@ -186,30 +186,30 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>CGPA</p>
                 <p className="mt-1 text-xl font-extrabold text-indigo-400">9.45 / 10</p>
                 <p className="text-[11px] text-zinc-500 mt-0.5">Top-tier academic rank</p>
               </div>
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-4">
+              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Projects</p>
                 <p className="mt-1 text-xl font-extrabold text-emerald-400">4+ Major</p>
                 <p className="text-[11px] text-zinc-500 mt-0.5">RAG & Multi-Agent AI</p>
               </div>
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-4">
+              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Community</p>
                 <p className="mt-1 text-xl font-extrabold text-amber-400">1000+</p>
                 <p className="text-[11px] text-zinc-500 mt-0.5">Students instructed (GDG)</p>
               </div>
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-4">
+              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
                 <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>API Latency</p>
                 <p className="mt-1 text-xl font-extrabold text-sky-400">&lt; 200ms</p>
                 <p className="text-[11px] text-zinc-500 mt-0.5">Target production speed</p>
               </div>
             </div>
 
-            <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4 text-xs text-zinc-300 leading-relaxed">
+            <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3.5 text-xs text-zinc-300 leading-relaxed">
               <div className="flex items-center gap-2 font-semibold text-indigo-400 mb-1" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                 <Cpu size={14} /> Focus Domains
               </div>
@@ -221,7 +221,7 @@ export default function Home() {
         {/* Scroll Indicator */}
         <a
           href="#about"
-          className="flex flex-col items-center justify-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors mt-8 self-center min-h-[44px]"
+          className="flex flex-col items-center justify-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors mt-4 self-center min-h-[44px]"
           aria-label="Scroll to about section"
         >
           <span className="text-[10px] uppercase tracking-[0.3em]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
@@ -232,24 +232,24 @@ export default function Home() {
       </section>
 
       {/* ── ABOUT SECTION ──────────────────────────────────────────── */}
-      <section id="about" className="scroll-mt-28 border-t border-zinc-800/80 pt-16">
+      <section id="about" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4">
         <AboutContent />
-        <div className="mt-16">
+        <div className="mt-8">
           <FAQSection />
         </div>
       </section>
 
       {/* ── JOURNEY SECTION ────────────────────────────────────────── */}
-      <section id="journey" className="scroll-mt-28 border-t border-zinc-800/80 pt-16 space-y-16">
+      <section id="journey" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4 space-y-10">
         <div>
-          <h2 className="mb-2 text-3xl font-bold tracking-tight text-zinc-100">Journey</h2>
-          <p className="mb-10 text-zinc-500">Timeline of education, technical experience, and community leadership.</p>
+          <h2 className="mb-1.5 text-3xl font-bold tracking-tight text-zinc-100">Journey</h2>
+          <p className="mb-6 text-zinc-500">Timeline of education, technical experience, and community leadership.</p>
           <JourneyTimeline />
         </div>
 
         {/* Achievements & Activities */}
-        <div className="border-t border-zinc-800/80 pt-12">
-          <div className="mb-6 flex items-center gap-3">
+        <div className="border-t border-zinc-800/80 pt-8">
+          <div className="mb-5 flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
               <Trophy size={18} />
             </div>
@@ -297,25 +297,25 @@ export default function Home() {
       </section>
 
       {/* ── PROJECTS SECTION ───────────────────────────────────────── */}
-      <section id="projects" className="scroll-mt-28 border-t border-zinc-800/80 pt-16">
-        <div className="mb-6 px-2">
-          <h2 className="mb-2 text-3xl font-bold tracking-tight text-zinc-100">Featured Projects</h2>
+      <section id="projects" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4">
+        <div className="mb-4 px-2">
+          <h2 className="mb-1.5 text-3xl font-bold tracking-tight text-zinc-100">Featured Projects</h2>
           <p className="text-zinc-500">Production-ready AI/ML systems, multi-agent frameworks, and memory-optimized tools.</p>
         </div>
         <ProjectsRail />
       </section>
 
       {/* ── SKILLS SECTION ─────────────────────────────────────────── */}
-      <section id="skills" className="scroll-mt-28 border-t border-zinc-800/80 pt-16 space-y-16">
+      <section id="skills" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4 space-y-10">
         <div>
-          <h2 className="mb-2 text-3xl font-bold tracking-tight text-zinc-100">Skills</h2>
-          <p className="mb-8 text-zinc-500">Mastered and applied technical domains.</p>
+          <h2 className="mb-1.5 text-3xl font-bold tracking-tight text-zinc-100">Skills</h2>
+          <p className="mb-6 text-zinc-500">Mastered and applied technical domains.</p>
           <SkillsOrbit />
         </div>
 
-        {/* Currently Exploring (Trimmed to max 2 items as required) */}
-        <div className="border-t border-zinc-800/80 pt-12">
-          <div className="mb-6 flex items-center gap-3">
+        {/* Currently Exploring */}
+        <div className="border-t border-zinc-800/80 pt-8">
+          <div className="mb-5 flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
               <Compass size={18} />
             </div>
@@ -348,16 +348,16 @@ export default function Home() {
       </section>
 
       {/* ── CONTACT SECTION ────────────────────────────────────────── */}
-      <section id="contact" className="scroll-mt-28 border-t border-zinc-800/80 pt-16 pb-12">
-        <h2 className="mb-2 text-3xl font-bold tracking-tight text-zinc-100">Contact</h2>
-        <p className="mb-10 text-zinc-500">
+      <section id="contact" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-8">
+        <h2 className="mb-1.5 text-3xl font-bold tracking-tight text-zinc-100">Contact</h2>
+        <p className="mb-8 text-zinc-500">
           Let&apos;s build something together. Reach out for opportunities, collaborations, or tech discussions.
         </p>
 
-        <div className="grid gap-10 lg:grid-cols-[5fr_7fr]">
+        <div className="grid gap-8 lg:grid-cols-[5fr_7fr]">
           {/* Direct Links */}
-          <div className="space-y-6">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/20 p-5 space-y-4">
+          <div className="space-y-4">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/20 p-4 space-y-3">
               <div className="flex items-center gap-3">
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -367,7 +367,7 @@ export default function Home() {
                   Active availability for internships and early-career engineer roles.
                 </span>
               </div>
-              <div className="flex items-center gap-3 border-t border-zinc-800/60 pt-4">
+              <div className="flex items-center gap-3 border-t border-zinc-800/60 pt-3">
                 <MapPin size={16} className="text-indigo-400 shrink-0" />
                 <span className="text-xs text-zinc-300">
                   Bangalore, Karnataka, India (open to hybrid, remote, or relocation).
@@ -375,11 +375,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {contact.email && (
                 <a
                   href={`mailto:${contact.email}`}
-                  className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-5 py-4 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
+                  className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
                 >
                   <Mail size={18} className="shrink-0 text-indigo-400" />
                   <div>
@@ -393,7 +393,7 @@ export default function Home() {
                 href={contact.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-5 py-4 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
+                className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
               >
                 <Github size={18} className="shrink-0 text-indigo-400" />
                 <div>
@@ -407,7 +407,7 @@ export default function Home() {
                   href={contact.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-5 py-4 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
+                  className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
                 >
                   <Linkedin size={18} className="shrink-0 text-indigo-400" />
                   <div>
@@ -421,7 +421,7 @@ export default function Home() {
                 href="/resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-5 py-4 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
+                className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-zinc-300 transition-all hover:border-indigo-500/50 hover:shadow-[0_0_14px_rgba(99,102,241,0.15)] min-h-[44px]"
               >
                 <FileText size={18} className="shrink-0 text-indigo-400" />
                 <div>

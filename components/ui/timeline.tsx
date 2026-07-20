@@ -30,7 +30,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
     <div className="w-full font-sans" ref={containerRef}>
       <div ref={ref} className="relative">
         {data.map((item, index) => (
-          <div key={index} className="flex justify-start pt-10 md:pt-24 md:gap-10">
+          <div key={index} className="flex justify-start pt-6 md:pt-10 md:gap-10">
             {/* Sticky year label + dot */}
             <div className="sticky top-32 z-40 flex max-w-xs flex-col items-center self-start md:w-full md:flex-row lg:max-w-sm">
               <div className="absolute left-3 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-950 md:left-3">
