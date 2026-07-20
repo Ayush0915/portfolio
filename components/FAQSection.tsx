@@ -12,14 +12,14 @@ export default function FAQSection() {
   };
 
   return (
-    <div className="border-t border-zinc-800/60 pt-8 mt-10">
+    <div className="border-t border-[var(--border-color)] pt-8 mt-10">
       <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-[var(--accent-primary)]">
           <HelpCircle size={18} />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-zinc-100">Frequently Asked Questions</h2>
-          <p className="text-xs text-zinc-500">Quick answers about my background, mindset, and availability.</p>
+          <h2 className="text-xl font-bold text-[var(--text-main)]">Frequently Asked Questions</h2>
+          <p className="text-xs text-[var(--text-muted)]">Quick answers about my background, mindset, and availability.</p>
         </div>
       </div>
 
@@ -29,14 +29,14 @@ export default function FAQSection() {
           return (
             <div 
               key={i} 
-              className="rounded-xl border border-zinc-800/80 bg-zinc-900/20 transition-colors duration-200 hover:border-zinc-700/80"
+              className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] transition-all duration-200 hover:border-[var(--accent-primary)] shadow-sm"
             >
               <button
                 onClick={() => toggle(i)}
-                className="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-semibold text-zinc-200 hover:text-zinc-100"
+                className="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-semibold text-[var(--text-main)] hover:text-[var(--accent-primary)] cursor-pointer"
               >
                 <span>{faq.question}</span>
-                <span className="shrink-0 text-zinc-500">
+                <span className="shrink-0 text-[var(--text-muted)]">
                   {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </span>
               </button>
@@ -50,7 +50,7 @@ export default function FAQSection() {
                     transition={{ duration: 0.2, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="border-t border-zinc-800/60 p-4 text-xs text-zinc-400 leading-relaxed font-sans">
+                    <div className="border-t border-[var(--border-color)] p-4 text-xs text-[var(--text-muted)] leading-relaxed font-sans">
                       {faq.answer}
                     </div>
                   </motion.div>

@@ -42,7 +42,7 @@ export default function SkillsOrbit() {
               return (
                 <div
                   key={skill}
-                  className="inline-flex items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/60 px-4 py-2 text-xs font-medium text-zinc-300 transition-all duration-300 hover:border-indigo-500/50 hover:bg-zinc-800/80 hover:text-zinc-100 hover:shadow-[0_0_14px_rgba(99,102,241,0.2)] cursor-default"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-chip)] px-4 py-2 text-xs font-medium text-[var(--text-sub)] transition-all duration-300 hover:border-[var(--accent-primary)] hover:bg-[var(--bg-chip-hover)] hover:text-[var(--text-main)] hover:shadow-sm cursor-default"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
                   {iconUrl ? (

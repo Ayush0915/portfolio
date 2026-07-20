@@ -71,7 +71,7 @@ export default function AboutContent() {
         animationNum={1}
         timelineRef={sectionRef}
         customVariants={revealVariants}
-        className="mb-12 text-2xl font-bold tracking-tight text-zinc-100 sm:text-3xl !leading-[1.2]"
+        className="mb-12 text-2xl font-bold tracking-tight text-[var(--text-main)] sm:text-3xl !leading-[1.2]"
       >
         I build{" "}
         <TimelineContent
@@ -79,7 +79,7 @@ export default function AboutContent() {
           animationNum={2}
           timelineRef={sectionRef}
           customVariants={fadeVariants}
-          className="font-accent italic text-[22px] sm:text-[30px] text-indigo-400 border-2 border-indigo-500/50 border-dotted inline px-1.5 rounded-md"
+          className="font-accent italic text-[22px] sm:text-[30px] text-indigo-600 dark:text-indigo-400 border-2 border-indigo-500/50 border-dotted inline px-1.5 rounded-md"
         >
           AI systems
         </TimelineContent>{" "}
@@ -89,7 +89,7 @@ export default function AboutContent() {
           animationNum={3}
           timelineRef={sectionRef}
           customVariants={fadeVariants}
-          className="font-accent italic text-[22px] sm:text-[30px] text-amber-400 border-2 border-amber-500/50 border-dotted inline px-1.5 rounded-md"
+          className="font-accent italic text-[22px] sm:text-[30px] text-amber-600 dark:text-amber-400 border-2 border-amber-500/50 border-dotted inline px-1.5 rounded-md"
         >
           actually run,
         </TimelineContent>{" "}
@@ -99,7 +99,7 @@ export default function AboutContent() {
           animationNum={4}
           timelineRef={sectionRef}
           customVariants={fadeVariants}
-          className="font-accent italic text-[22px] sm:text-[30px] text-emerald-400 border-2 border-emerald-500/50 border-dotted inline px-1.5 rounded-md"
+          className="font-accent italic text-[22px] sm:text-[30px] text-emerald-600 dark:text-emerald-400 border-2 border-emerald-500/50 border-dotted inline px-1.5 rounded-md"
         >
           notebooks.
         </TimelineContent>
@@ -116,7 +116,7 @@ export default function AboutContent() {
             animationNum={5}
             timelineRef={sectionRef}
             customVariants={fadeVariants}
-            className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-zinc-900"
+            className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)]"
           >
             {!imgError ? (
               <Image
@@ -128,12 +128,12 @@ export default function AboutContent() {
                 onError={() => setImgError(true)}
               />
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-950/80 via-zinc-900 to-zinc-950 p-6 border border-zinc-800 rounded-xl">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-950/80 via-zinc-900 to-zinc-950 p-6 border border-[var(--border-color)] rounded-xl">
                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-[0_0_24px_rgba(99,102,241,0.5)]">
-                  <span className="text-3xl font-black tracking-wider text-zinc-100">AB</span>
+                  <span className="text-3xl font-black tracking-wider text-white">AB</span>
                 </div>
-                <p className="mt-4 text-base font-bold text-zinc-200">{contact.name}</p>
-                <p className="mt-1 text-xs text-zinc-500 uppercase tracking-widest" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>CS Student & AI/ML Builder</p>
+                <p className="mt-4 text-base font-bold text-white">{contact.name}</p>
+                <p className="mt-1 text-xs text-zinc-400 uppercase tracking-widest" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>CS Student & AI/ML Builder</p>
               </div>
             )}
           </TimelineContent>
@@ -141,7 +141,7 @@ export default function AboutContent() {
 
         {/* Right — fact table + tags */}
         <div>
-          <div className="divide-y divide-zinc-800 border-t border-zinc-800">
+          <div className="divide-y divide-[var(--border-color)] border-t border-[var(--border-color)]">
             {facts.map((fact, i) => (
               <TimelineContent
                 key={fact.label}
@@ -152,12 +152,12 @@ export default function AboutContent() {
                 className="grid grid-cols-[130px_1fr] gap-4 py-4"
               >
                 <span
-                  className="pt-0.5 text-xs font-semibold uppercase tracking-widest text-zinc-500"
+                  className="pt-0.5 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
                   {fact.label}
                 </span>
-                <span className="text-sm text-zinc-300">{fact.value}</span>
+                <span className="text-sm text-[var(--text-main)] font-medium">{fact.value}</span>
               </TimelineContent>
             ))}
           </div>
@@ -171,7 +171,7 @@ export default function AboutContent() {
             className="mt-8"
           >
             <p
-              className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500"
+              className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
             >
               What I bring
@@ -180,7 +180,7 @@ export default function AboutContent() {
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-1 text-xs text-zinc-300"
+                  className="rounded-md border border-[var(--border-color)] bg-[var(--bg-chip)] px-3 py-1 text-xs font-medium text-[var(--text-sub)]"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
                   {tag}
@@ -192,28 +192,28 @@ export default function AboutContent() {
 
       </div>
 
-          {/* Narrative Section */}
+      {/* Narrative Section */}
       <TimelineContent
         as="div"
         animationNum={facts.length + 8}
         timelineRef={sectionRef}
         customVariants={fadeVariants}
-        className="mt-16 grid gap-10 text-zinc-400 leading-relaxed sm:grid-cols-2 border-t border-zinc-800/80 pt-10"
+        className="mt-16 grid gap-10 text-[var(--text-muted)] leading-relaxed sm:grid-cols-2 border-t border-[var(--border-color)] pt-10"
       >
         <div>
-          <h3 className="text-lg font-bold text-zinc-200 mb-3 font-sans">The Core Story: Bridging ML with Engineering</h3>
+          <h3 className="text-lg font-bold text-[var(--text-main)] mb-3 font-sans">The Core Story: Bridging ML with Engineering</h3>
           <p className="text-[13px] mb-4">
             Growing up as a builder, I realized that many machine learning models remain trapped inside isolated research notebooks. I chose to focus on **Data Science** because I wanted to bridge the gap between statistical probability models and robust, deterministic software engineering.
           </p>
           <p className="text-[13px]">
-            To me, an AI system is only as good as its production stability and execution safety. That is why I spend my time constructing isolated sandboxes, implementing static AST syntax check validations, and ensuring backend API pipelines run under <span className="text-amber-400 font-semibold font-mono">200ms</span>.
+            To me, an AI system is only as good as its production stability and execution safety. That is why I spend my time constructing isolated sandboxes, implementing static AST syntax check validations, and ensuring backend API pipelines run under <span className="text-amber-600 dark:text-amber-400 font-semibold font-mono">200ms</span>.
           </p>
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-zinc-200 mb-3 font-sans">What Excites Me & Current Focus</h3>
+          <h3 className="text-lg font-bold text-[var(--text-main)] mb-3 font-sans">What Excites Me & Current Focus</h3>
           <p className="text-[13px] mb-4">
-            I am fascinated by **Agentic AI** — workflows that go beyond a single prompt-response to coordinate multiple specialized agents (like CodeVerdict's 4 async agents reviewing code concurrently). Building resilient, grounded retrieval systems represents the future of software development.
+            I am fascinated by **Agentic AI** — workflows that go beyond a single prompt-response to coordinate multiple specialized agents (like CodeVerdict&apos;s 4 async agents reviewing code concurrently). Building resilient, grounded retrieval systems represents the future of software development.
           </p>
           <p className="text-[13px]">
             Currently, I am deep-diving into LLM interpretability, declarative pipelines (such as DSPy), and high-throughput backend APIs. I am actively looking for internship and early-career roles where I can help teams build and scale polished, production-ready AI products.

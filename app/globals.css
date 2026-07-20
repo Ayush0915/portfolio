@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-jetbrains-mono);
@@ -14,28 +16,28 @@
 
   /* CSS Theme Tokens — Dark Mode */
   --bg-page: #09090b;
-  --bg-surface: rgba(24, 24, 27, 0.75);
-  --bg-card: rgba(18, 18, 22, 0.65);
-  --bg-card-hover: rgba(24, 24, 30, 0.85);
+  --bg-surface: rgba(24, 24, 27, 0.85);
+  --bg-card: rgba(24, 24, 27, 0.7);
+  --bg-card-hover: rgba(39, 39, 42, 0.85);
   --bg-chip: #27272a;
   --bg-chip-hover: #3f3f46;
-  --bg-input: rgba(24, 24, 27, 0.5);
-  --bg-badge: rgba(99, 102, 241, 0.1);
+  --bg-input: rgba(24, 24, 27, 0.6);
+  --bg-badge: rgba(99, 102, 241, 0.15);
 
-  --border-color: rgba(63, 63, 70, 0.45);
-  --border-strong: rgba(82, 82, 91, 0.7);
-  --border-hover: rgba(129, 140, 248, 0.5);
+  --border-color: rgba(63, 63, 70, 0.6);
+  --border-strong: rgba(82, 82, 91, 0.8);
+  --border-hover: rgba(129, 140, 248, 0.6);
 
   --text-main: #f4f4f5;
-  --text-sub: #d4d4d8;
+  --text-sub: #e4e4e7;
   --text-muted: #a1a1aa;
   --text-faint: #71717a;
   
   --accent-primary: #818cf8;
   --accent-hover: #a5b4fc;
-  --hero-stroke: rgba(161, 161, 170, 0.5);
-  --hero-fill: transparent;
-  --grid-line-color: rgba(255, 255, 255, 0.03);
+  --hero-stroke: #e4e4e7;
+  --hero-fill: #09090b;
+  --grid-line-color: rgba(255, 255, 255, 0.04);
   
   color-scheme: dark;
 }
@@ -43,13 +45,13 @@
 [data-theme="light"] {
   /* CSS Theme Tokens — Light Mode (High Contrast Accessible Palette) */
   --bg-page: #f8fafc;
-  --bg-surface: rgba(255, 255, 255, 0.92);
+  --bg-surface: rgba(255, 255, 255, 0.95);
   --bg-card: #ffffff;
   --bg-card-hover: #f1f5f9;
   --bg-chip: #e2e8f0;
   --bg-chip-hover: #cbd5e1;
-  --bg-input: #f8fafc;
-  --bg-badge: rgba(79, 70, 229, 0.1);
+  --bg-input: #ffffff;
+  --bg-badge: rgba(79, 70, 229, 0.12);
 
   --border-color: #cbd5e1;
   --border-strong: #94a3b8;
@@ -62,9 +64,9 @@
 
   --accent-primary: #4338ca; /* Indigo 700 */
   --accent-hover: #3730a3;
-  --hero-stroke: #1e293b;
-  --hero-fill: rgba(241, 245, 249, 0.85);
-  --grid-line-color: rgba(0, 0, 0, 0.04);
+  --hero-stroke: #0f172a;
+  --hero-fill: #f8fafc;
+  --grid-line-color: rgba(0, 0, 0, 0.05);
 
   color-scheme: light;
 }
@@ -87,53 +89,6 @@ body {
     linear-gradient(var(--grid-line-color) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px);
   background-size: 44px 44px;
-}
-
-/* Automated Light Mode Utility Mappings for Seamless Consistency */
-html[data-theme="light"] {
-  .bg-zinc-950 { background-color: var(--bg-page) !important; }
-  .bg-zinc-900 { background-color: var(--bg-card) !important; }
-  .bg-zinc-900\/40,
-  .bg-zinc-900\/30,
-  .bg-zinc-900\/20,
-  .bg-zinc-900\/60,
-  .bg-zinc-900\/80,
-  .bg-zinc-900\/70,
-  .bg-zinc-900\/95 { background-color: var(--bg-surface) !important; }
-
-  .bg-zinc-800,
-  .bg-zinc-800\/80,
-  .bg-zinc-800\/60,
-  .bg-zinc-800\/50 { background-color: var(--bg-chip) !important; }
-
-  .bg-zinc-950\/40,
-  .bg-zinc-950\/50,
-  .bg-zinc-950\/60 { background-color: rgba(241, 245, 249, 0.9) !important; }
-
-  .border-zinc-800,
-  .border-zinc-800\/80,
-  .border-zinc-800\/60,
-  .border-zinc-800\/50,
-  .border-zinc-700,
-  .border-zinc-700\/60,
-  .border-zinc-700\/40,
-  .border-zinc-850 { border-color: var(--border-color) !important; }
-
-  .text-zinc-100, .text-white { color: var(--text-main) !important; }
-  .text-zinc-200 { color: var(--text-sub) !important; }
-  .text-zinc-300 { color: var(--text-sub) !important; }
-  .text-zinc-400 { color: var(--text-muted) !important; }
-  .text-zinc-500 { color: var(--text-faint) !important; }
-
-  /* High contrast CTA buttons for light mode */
-  .bg-indigo-500\/10 { background-color: rgba(79, 70, 229, 0.12) !important; }
-  .text-indigo-300, .text-indigo-400 { color: #4338ca !important; }
-  .border-indigo-500\/60, .border-indigo-500\/40, .border-indigo-500\/20 { border-color: rgba(79, 70, 229, 0.5) !important; }
-
-  .hover\:border-zinc-500:hover,
-  .hover\:border-zinc-600:hover,
-  .hover\:border-zinc-700:hover,
-  .hover\:border-zinc-800:hover { border-color: var(--border-strong) !important; }
 }
 
 .font-accent {

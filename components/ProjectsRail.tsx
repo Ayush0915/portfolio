@@ -229,34 +229,38 @@ export default function ProjectsRail() {
               transition={{ duration: 0.35, delay: 0.08 }}
             >
               {item.meta && (
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.22em] text-teal-400">
+                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--accent-primary)]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                   {item.meta}
                 </p>
               )}
-              <h2 className="mb-3 text-3xl sm:text-[2.4rem] font-black leading-tight text-white">
+              <h2 className="mb-3 text-3xl sm:text-[2.4rem] font-black leading-tight text-[var(--text-main)]">
                 {item.title}
               </h2>
 
               <div className="flex flex-col sm:flex-row sm:items-end gap-6">
-                <p className="flex-1 text-sm leading-relaxed text-zinc-400 max-w-xs">
+                <p className="flex-1 text-sm leading-relaxed text-[var(--text-muted)] max-w-xs">
                   {item.description}
                 </p>
 
                 <div className="flex flex-col items-start gap-3 flex-shrink-0">
                   {/* Detail + external links */}
                   <div className="flex items-center gap-2">
+                    {/* Primary CTA */}
                     <Link
                       href={`/projects/${item.slug}`}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-indigo-500/50 bg-indigo-500/10 px-3 py-1.5 text-xs font-medium text-indigo-300 hover:bg-indigo-500/20 transition-colors"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                      style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                     >
                       View Details
                     </Link>
+                    {/* Secondary CTAs */}
                     {item.githubUrl && (
                       <a
                         href={item.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-semibold text-[var(--text-main)] hover:border-[var(--accent-primary)] hover:bg-[var(--bg-chip-hover)] transition-all shadow-sm cursor-pointer"
+                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                       >
                         <Github className="h-3.5 w-3.5" />
                         GitHub
@@ -267,7 +271,8 @@ export default function ProjectsRail() {
                         href={item.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-semibold text-[var(--text-main)] hover:border-[var(--accent-primary)] hover:bg-[var(--bg-chip-hover)] transition-all shadow-sm cursor-pointer"
+                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                         Live
@@ -276,21 +281,21 @@ export default function ProjectsRail() {
                   </div>
 
                   {/* prev / counter / next pill */}
-                  <div className="inline-flex items-center rounded-full bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/40 px-1 py-1">
+                  <div className="inline-flex items-center rounded-full bg-[var(--bg-surface)] backdrop-blur-sm border border-[var(--border-color)] px-1 py-1">
                     <button
                       onClick={prev}
                       aria-label="Previous project"
-                      className="rounded-full p-2 text-zinc-400 hover:text-white hover:bg-zinc-700/60 transition-colors"
+                      className="rounded-full p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-chip-hover)] transition-colors cursor-pointer"
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
-                    <span className="px-1 text-center text-sm font-medium text-zinc-300 tabular-nums">
+                    <span className="px-2 text-center text-sm font-semibold text-[var(--text-main)] tabular-nums" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                       {index + 1} / {ITEMS.length}
                     </span>
                     <button
                       onClick={next}
                       aria-label="Next project"
-                      className="rounded-full p-2 text-zinc-400 hover:text-white hover:bg-zinc-700/60 transition-colors"
+                      className="rounded-full p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-chip-hover)] transition-colors cursor-pointer"
                     >
                       <ChevronRight className="h-4 w-4" />
                     </button>

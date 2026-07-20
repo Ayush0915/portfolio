@@ -12,20 +12,20 @@ export default function SkillsPage() {
   return (
     <div className="space-y-16">
       <div>
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-zinc-100">Technical Skills</h1>
-        <p className="mb-8 text-zinc-500">Mastered and applied technical domains across AI/ML engineering, multi-agent systems, and data pipelines.</p>
+        <h1 className="mb-2 text-3xl font-bold tracking-tight text-[var(--text-main)]">Technical Skills</h1>
+        <p className="mb-8 text-[var(--text-muted)]">Mastered and applied technical domains across AI/ML engineering, multi-agent systems, and data pipelines.</p>
         <SkillsOrbit />
       </div>
 
       {/* Currently Exploring Section */}
-      <div className="border-t border-zinc-800/80 pt-12">
+      <div className="border-t border-[var(--border-color)] pt-12">
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-[var(--accent-primary)]">
             <Compass size={18} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-zinc-100">Currently Exploring</h2>
-            <p className="text-xs text-zinc-500">Technologies I am actively reading and prototype testing.</p>
+            <h2 className="text-xl font-bold text-[var(--text-main)]">Currently Exploring</h2>
+            <p className="text-xs text-[var(--text-muted)]">Technologies I am actively reading and prototype testing.</p>
           </div>
         </div>
 
@@ -33,18 +33,18 @@ export default function SkillsPage() {
           {currentlyExploring.map((item) => (
             <div 
               key={item.topic} 
-              className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5 backdrop-blur-sm transition-all hover:border-indigo-500/20"
+              className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] p-5 backdrop-blur-sm transition-all hover:border-[var(--accent-primary)] shadow-sm"
             >
               <div className="mb-3 flex items-center justify-between gap-2">
-                <h3 className="text-sm font-bold text-zinc-200">{item.topic}</h3>
+                <h3 className="text-sm font-bold text-[var(--text-main)]">{item.topic}</h3>
                 <span 
-                  className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                  className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase bg-indigo-500/10 text-[var(--accent-primary)] border border-indigo-500/20"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
                   {item.status}
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">{item.description}</p>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
