@@ -12,19 +12,96 @@
   --font-accent: Georgia, "Times New Roman", serif;
 }
 
+/* ── Dark / Light Theme Styles ────────────────────────────────────────────────── */
+html {
+  color-scheme: dark;
+  background-color: #09090b;
+  color: #f4f4f5;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+html.light {
+  color-scheme: light;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
 body {
-  /* Subtle grid texture — no background-color here, set via Tailwind bg-zinc-950 on <body> */
+  /* Dark mode background grid texture */
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
+html.light body {
+  /* Light mode background grid texture */
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Light Mode Overrides for Slate/Zinc Utility Classes */
+html.light .bg-zinc-950 {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-zinc-900 {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-zinc-900\/40,
+html.light .bg-zinc-900\/30,
+html.light .bg-zinc-900\/20,
+html.light .bg-zinc-900\/60,
+html.light .bg-zinc-900\/80,
+html.light .bg-zinc-900\/70 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html.light .bg-zinc-950\/40,
+html.light .bg-zinc-950\/50,
+html.light .bg-zinc-950\/60 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+html.light .border-zinc-800,
+html.light .border-zinc-800\/80,
+html.light .border-zinc-800\/60,
+html.light .border-zinc-800\/50,
+html.light .border-zinc-700,
+html.light .border-zinc-700\/60,
+html.light .border-zinc-700\/40 {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .text-zinc-100,
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-zinc-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-zinc-300 {
+  color: #334155 !important;
+}
+
+html.light .text-zinc-400 {
+  color: #475569 !important;
+}
+
+html.light .text-zinc-500 {
+  color: #64748b !important;
+}
+
 .font-accent {
   font-family: var(--font-accent);
 }
 
-/* ─── Mobile App Polish ─────────────────────────────────────────────────────── */
+/* ── Mobile & Scroll Polish ───────────────────────────────────────────────────── */
 html, body {
   overflow-x: hidden;
   position: relative;
@@ -33,7 +110,6 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Remove the gray tap highlight overlay on mobile browsers */
 button,
 a,
 input,
@@ -43,7 +119,6 @@ select {
   outline: none;
 }
 
-/* Prevent accidental text highlighting during touch interactions on UI controls */
 nav,
 button,
 a {
@@ -51,7 +126,6 @@ a {
   -webkit-user-select: none;
 }
 
-/* Custom scrollbar matching dark mode theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -61,12 +135,19 @@ a {
   background: #09090b;
 }
 
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #27272a;
   border-radius: 99px;
 }
 
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
-

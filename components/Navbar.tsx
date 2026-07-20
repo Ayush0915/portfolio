@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/components/ThemeProvider";
 
 const navLinks = [
   { href: "/#about", label: "About" },
@@ -17,6 +18,7 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="fixed top-5 left-1/2 z-50 w-full -translate-x-1/2 px-4">
@@ -51,6 +53,29 @@ export default function Navbar() {
         >
           Resume
         </a>
+
+        <div className="mx-1 h-4 w-px bg-zinc-700" />
+
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="rounded-full p-2 text-zinc-400 transition-colors hover:bg-zinc-800/80 hover:text-amber-400 min-w-[44px] min-h-[44px] flex items-center justify-center ml-1"
+          aria-label="Toggle dark/light theme"
+          title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          <motion.div
+            key={theme}
+            initial={{ rotate: -90, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-indigo-400" />
+            )}
+          </motion.div>
+        </button>
       </nav>
 
       {/* Mobile Navbar */}
@@ -62,22 +87,36 @@ export default function Navbar() {
           AB
         </Link>
 
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="rounded-full p-2.5 transition-colors hover:bg-zinc-800/60 min-w-[44px] min-h-[44px] flex items-center justify-center"
-          aria-label="Toggle menu"
-        >
-          <motion.div
-            animate={{ rotate: isOpen ? 90 : 0 }}
-            transition={{ duration: 0.3 }}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={toggleTheme}
+            className="rounded-full p-2 text-zinc-400 transition-colors hover:bg-zinc-800/60 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Toggle dark/light theme"
           >
-            {isOpen ? (
-              <X className="w-5 h-5 text-zinc-100" />
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-amber-400" />
             ) : (
-              <Menu className="w-5 h-5 text-zinc-100" />
+              <Moon className="w-4 h-4 text-indigo-400" />
             )}
-          </motion.div>
-        </button>
+          </button>
+
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="rounded-full p-2.5 transition-colors hover:bg-zinc-800/60 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Toggle menu"
+          >
+            <motion.div
+              animate={{ rotate: isOpen ? 90 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {isOpen ? (
+                <X className="w-5 h-5 text-zinc-100" />
+              ) : (
+                <Menu className="w-5 h-5 text-zinc-100" />
+              )}
+            </motion.div>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Menu Drawer */}

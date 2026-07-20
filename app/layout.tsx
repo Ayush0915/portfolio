@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Chatbot } from "@/components/Chatbot";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ayushkr-bhadani.vercel.app"),
@@ -21,9 +22,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className="antialiased bg-zinc-950 text-zinc-100 min-h-screen flex flex-col"
+        className="antialiased min-h-screen flex flex-col transition-colors duration-300"
       >
         <script
           type="application/ld+json"
@@ -46,12 +47,14 @@ export default function RootLayout({
             })
           }}
         />
-        <Navbar />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-10 pt-24">
-          {children}
-        </main>
-        <Footer />
-        <Chatbot />
+        <ThemeProvider>
+          <Navbar />
+          <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-10 pt-24">
+            {children}
+          </main>
+          <Footer />
+          <Chatbot />
+        </ThemeProvider>
       </body>
     </html>
   );
