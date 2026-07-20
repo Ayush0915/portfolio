@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Github, Linkedin, Mail, FileText, ArrowRight, ChevronDown, Trophy, GraduationCap, Users, Sparkles, Compass, MapPin, Code2, BrainCircuit, Cpu } from "lucide-react";
+import { Github, Linkedin, Mail, FileText, ArrowRight, ChevronDown, Trophy, GraduationCap, Users, Sparkles, Compass, MapPin, BrainCircuit, ExternalLink, ShieldCheck, Target } from "lucide-react";
 import { contact, achievements, currentlyExploring } from "@/lib/data";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import AboutContent from "@/components/AboutContent";
@@ -39,17 +39,17 @@ export default function Home() {
       };
     }
     return {
-      initial: { opacity: 0, y: 28 },
+      initial: { opacity: 0, y: 24 },
       animate: { opacity: 1, y: 0 },
-      transition: { duration: 0.55, delay, ease: "easeOut" as const },
+      transition: { duration: 0.5, delay, ease: "easeOut" as const },
     };
   };
 
   return (
-    <div className="relative flex flex-col gap-8 pt-2">
+    <div className="relative flex flex-col pt-2">
       {/* ── HERO SECTION ───────────────────────────────────────────── */}
-      <section id="hero" className="relative flex min-h-[75vh] flex-col justify-between pt-2 pb-6">
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10 my-auto">
+      <section id="hero" className="relative flex min-h-[75vh] flex-col justify-between pt-2 pb-10">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-10 my-auto">
           <div className="flex flex-col justify-center">
             {/* Availability Status Badge */}
             <motion.div 
@@ -171,50 +171,87 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Highlights Card */}
+          {/* Interactive Verifiable Engineering Highlights Card */}
           <motion.div 
             {...anim(0.4)}
-            className="w-full rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm shadow-xl space-y-5"
+            className="w-full rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm shadow-xl space-y-4"
           >
-            <div className="flex items-center gap-3 border-b border-zinc-800/80 pb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-                <BrainCircuit size={22} />
+            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                  <BrainCircuit size={20} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-100">Engineering Highlights</h3>
+                  <p className="text-[11px] text-zinc-500">Verifiable Track Record</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-zinc-100">Engineering Highlights</h3>
-                <p className="text-xs text-zinc-500">Bangalore Institute of Technology</p>
-              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+                <ShieldCheck size={11} /> Proof Points
+              </span>
             </div>
 
+            {/* Clickable Verifiable Stat Cards */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
-                <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>CGPA</p>
-                <p className="mt-1 text-xl font-extrabold text-indigo-400">9.45 / 10</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">Top-tier academic rank</p>
-              </div>
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
-                <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Projects</p>
-                <p className="mt-1 text-xl font-extrabold text-emerald-400">4+ Major</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">RAG & Multi-Agent AI</p>
-              </div>
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
-                <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Community</p>
-                <p className="mt-1 text-xl font-extrabold text-amber-400">1000+</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">Students instructed (GDG)</p>
-              </div>
-              <div className="rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5">
-                <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>API Latency</p>
-                <p className="mt-1 text-xl font-extrabold text-sky-400">&lt; 200ms</p>
-                <p className="text-[11px] text-zinc-500 mt-0.5">Target production speed</p>
-              </div>
+              <a
+                href="#journey"
+                className="group rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5 transition-all duration-300 hover:border-indigo-500/40 hover:bg-zinc-900/60"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 group-hover:text-indigo-400 transition-colors" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Academics</p>
+                  <ArrowRight size={12} className="text-zinc-600 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all" />
+                </div>
+                <p className="mt-1 text-lg font-black text-indigo-400">9.45 / 10 CGPA</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5 line-clamp-1">B.Tech CSE (Data Science)</p>
+              </a>
+
+              <a
+                href="#projects"
+                className="group rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5 transition-all duration-300 hover:border-emerald-500/40 hover:bg-zinc-900/60"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 group-hover:text-emerald-400 transition-colors" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>AI Systems</p>
+                  <ArrowRight size={12} className="text-zinc-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                </div>
+                <p className="mt-1 text-lg font-black text-emerald-400">4 Systems</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5 line-clamp-1">CodeVerdict, AskSQL, etc.</p>
+              </a>
+
+              <a
+                href="#journey"
+                className="group rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5 transition-all duration-300 hover:border-amber-500/40 hover:bg-zinc-900/60"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 group-hover:text-amber-400 transition-colors" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>GDG Lead</p>
+                  <ArrowRight size={12} className="text-zinc-600 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+                </div>
+                <p className="mt-1 text-lg font-black text-amber-400">1000+ Taught</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5 line-clamp-1">GDG Workshops & Jams</p>
+              </a>
+
+              <Link
+                href="/projects/codeverdict"
+                className="group rounded-xl border border-zinc-800/60 bg-zinc-950/40 p-3.5 transition-all duration-300 hover:border-sky-500/40 hover:bg-zinc-900/60"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 group-hover:text-sky-400 transition-colors" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Benchmark</p>
+                  <ExternalLink size={12} className="text-zinc-600 group-hover:text-sky-400 transition-all" />
+                </div>
+                <p className="mt-1 text-lg font-black text-sky-400">87.5% Precision</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5 line-clamp-1">CodeVerdict PR Suite</p>
+              </Link>
             </div>
 
-            <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3.5 text-xs text-zinc-300 leading-relaxed">
-              <div className="flex items-center gap-2 font-semibold text-indigo-400 mb-1" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
-                <Cpu size={14} /> Focus Domains
+            {/* Verifiable Mindset Statement */}
+            <a 
+              href="#about" 
+              className="block rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3.5 text-xs text-zinc-300 leading-relaxed transition-colors hover:border-indigo-500/40 hover:bg-indigo-500/10"
+            >
+              <div className="flex items-center gap-1.5 font-semibold text-indigo-400 mb-1" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+                <Target size={13} /> Engineering Mindset
               </div>
-              Multi-Agent AI Orchestration · Vector Search & RAG · Fast Execution Sandboxes · Model Interpretability
-            </div>
+              Building deterministic execution safety, isolated DuckDB & FAISS sandboxes, and low-latency API pipelines over raw prompt wrappers.
+            </a>
           </motion.div>
         </div>
 
@@ -232,15 +269,13 @@ export default function Home() {
       </section>
 
       {/* ── ABOUT SECTION ──────────────────────────────────────────── */}
-      <section id="about" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4">
+      <section id="about" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-6">
         <AboutContent />
-        <div className="mt-8">
-          <FAQSection />
-        </div>
+        <FAQSection />
       </section>
 
       {/* ── JOURNEY SECTION ────────────────────────────────────────── */}
-      <section id="journey" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4 space-y-10">
+      <section id="journey" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-6">
         <div>
           <h2 className="mb-1.5 text-3xl font-bold tracking-tight text-zinc-100">Journey</h2>
           <p className="mb-6 text-zinc-500">Timeline of education, technical experience, and community leadership.</p>
@@ -248,7 +283,7 @@ export default function Home() {
         </div>
 
         {/* Achievements & Activities */}
-        <div className="border-t border-zinc-800/80 pt-8">
+        <div className="border-t border-zinc-800/80 pt-8 mt-10">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
               <Trophy size={18} />
@@ -297,7 +332,7 @@ export default function Home() {
       </section>
 
       {/* ── PROJECTS SECTION ───────────────────────────────────────── */}
-      <section id="projects" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4">
+      <section id="projects" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-6">
         <div className="mb-4 px-2">
           <h2 className="mb-1.5 text-3xl font-bold tracking-tight text-zinc-100">Featured Projects</h2>
           <p className="text-zinc-500">Production-ready AI/ML systems, multi-agent frameworks, and memory-optimized tools.</p>
@@ -306,7 +341,7 @@ export default function Home() {
       </section>
 
       {/* ── SKILLS SECTION ─────────────────────────────────────────── */}
-      <section id="skills" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-4 space-y-10">
+      <section id="skills" className="scroll-mt-24 border-t border-zinc-800/80 pt-10 pb-6">
         <div>
           <h2 className="mb-1.5 text-3xl font-bold tracking-tight text-zinc-100">Skills</h2>
           <p className="mb-6 text-zinc-500">Mastered and applied technical domains.</p>
@@ -314,7 +349,7 @@ export default function Home() {
         </div>
 
         {/* Currently Exploring */}
-        <div className="border-t border-zinc-800/80 pt-8">
+        <div className="border-t border-zinc-800/80 pt-8 mt-10">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
               <Compass size={18} />

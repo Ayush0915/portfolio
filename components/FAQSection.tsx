@@ -12,8 +12,8 @@ export default function FAQSection() {
   };
 
   return (
-    <div className="border-t border-zinc-800/80 pt-8 mt-8">
-      <div className="mb-8 flex items-center gap-3">
+    <div className="border-t border-zinc-800/60 pt-8 mt-10">
+      <div className="mb-6 flex items-center gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
           <HelpCircle size={18} />
         </div>
@@ -23,17 +23,17 @@ export default function FAQSection() {
         </div>
       </div>
 
-      <div className="space-y-4 max-w-3xl">
+      <div className="space-y-3 max-w-3xl">
         {faqs.map((faq, i) => {
           const isOpen = openIndex === i;
           return (
             <div 
               key={i} 
-              className="rounded-xl border border-zinc-850 bg-zinc-900/10 transition-colors duration-200 hover:border-zinc-800"
+              className="rounded-xl border border-zinc-800/80 bg-zinc-900/20 transition-colors duration-200 hover:border-zinc-700/80"
             >
               <button
                 onClick={() => toggle(i)}
-                className="flex w-full items-center justify-between gap-4 p-5 text-left text-sm font-semibold text-zinc-200 hover:text-zinc-100"
+                className="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-semibold text-zinc-200 hover:text-zinc-100"
               >
                 <span>{faq.question}</span>
                 <span className="shrink-0 text-zinc-500">
@@ -47,10 +47,10 @@ export default function FAQSection() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="border-t border-zinc-850 p-5 text-xs text-zinc-400 leading-relaxed font-sans">
+                    <div className="border-t border-zinc-800/60 p-4 text-xs text-zinc-400 leading-relaxed font-sans">
                       {faq.answer}
                     </div>
                   </motion.div>
