@@ -11,6 +11,7 @@ import JourneyTimeline from "@/components/JourneyTimeline";
 import ProjectsRail from "@/components/ProjectsRail";
 import SkillsOrbit from "@/components/ui/skills-orbit";
 import ContactForm from "@/components/ContactForm";
+import { SectionBackgroundTint } from "@/components/SectionBackgroundTint";
 
 const roles = [
   "AI/ML Engineer",
@@ -47,6 +48,7 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col pt-2">
+      <SectionBackgroundTint />
       {/* ── HERO SECTION ───────────────────────────────────────────── */}
       <section id="hero" className="relative flex min-h-[75vh] flex-col justify-between pt-2 pb-10">
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-10 my-auto">
