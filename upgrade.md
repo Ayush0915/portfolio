@@ -1,108 +1,78 @@
-# Portfolio Bugs & Fixes
-Source: live-site fetch of ayushkr-bhadani.vercel.app + repo README/package.json inspection.
+# Mobile & Theme-Switching Bugs (confirmed from screenshots)
+Source: 3 mobile screenshots — hero section in dark theme, hero section in light theme, and a Journey timeline card.
 
 ---
 
-## Bug 1 — `/about` route re-renders the entire homepage instead of an About page
+## Bug 1 — Tech-stack tag chips render as solid black bars with invisible text
 
-**What's happening:**
-- On `/` (homepage), the nav links point to real routes: `/about`, `/journey`, `/projects`, `/skills`, `/contact`.
-- Clicking into `/about` doesn't show an About page — it renders the **whole homepage again** (Hero → About → Journey → Projects → Skills → Contact, all stacked).
-- Once on `/about`, the nav itself changes behavior: it now links to anchors (`#about`, `#journey`, `#projects`...) instead of routes.
-- Meanwhile `/skills` and `/projects` **do** render as real, distinct pages with their own `<title>`/meta description.
+**Evidence:** On the Journey timeline card ("Core Technical Member" entry), the tag row below the bullet points — which should show something like `React` `Next.js` `TypeScript` `Tailwind CSS` `Firebase` — instead renders as plain solid-black rounded rectangles with no visible text at all.
 
-**Why it's a bug:** the site can't decide if it's a single-page scroller or a multi-page app, and different routes disagree about which one they are. A recruiter clicking "About" expects a focused About page and instead gets dumped back at the top of the entire site.
-
-**Root cause (likely):** the `/about` route either isn't implemented as its own page and is falling back to the root layout/page, or it's importing/rendering the same page component as `/` instead of a dedicated `About` component.
+**Root cause (near-certain):** a CSS variable for tag/chip background or text color isn't resolving correctly for the active theme — most likely the chip is using a hardcoded dark background (`bg-black` or a dark theme token) while the text color is *also* dark (inheriting a dark-on-light default), so text and background collapse to the same value. This is the classic "theme token not swapped" bug — one half of the component (bg) got themed, the other half (text) didn't, or vice versa.
 
 **Fix:**
-1. In your `app/` directory, confirm whether `app/about/page.tsx` exists and what it renders. If it doesn't exist, Next.js App Router will 404 by default — so if you're seeing the homepage instead of a 404, something is explicitly re-exporting or redirecting to the root page. Find that and remove it.
-2. Decide on ONE information architecture and commit to it:
-   - **Option A (recommended, see full audit for rationale): hybrid.** Homepage = condensed single-scroll landing (short About blurb, 3-project teaser, compact skills strip, contact). `/about`, `/skills`, `/projects` = real dedicated pages with deeper content, linked via routes everywhere, no anchor links.
-   - **Option B: pure single page.** Delete `/about`, `/skills` as separate routes entirely; nav becomes anchor-only (`#about`, `#skills`...) on every page, and it only exists on `/`. Keep `/projects/[slug]` as real routes for case studies.
-3. Whichever you pick, make the `<Header>`/nav component render **one consistent link type** (routes or anchors, not both depending on which page you're standing on).
-4. Give `/about` its own `<title>` and meta description, same pattern you already used correctly for `/skills` and `/projects`.
+1. Find the tag/chip component (likely `TechTag`, `SkillChip`, or similar, reused in both the Journey timeline and Skills page).
+2. Confirm it's using theme-aware tokens for **both** background and text (e.g., `bg-muted text-muted-foreground` or your CSS variable equivalents), not a mix of a hardcoded color and a themed one.
+3. Test it explicitly in both themes — toggle light/dark with this exact component visible and confirm text is legible in both. This bug is very likely present anywhere else this same tag component is reused (Skills page badges, project tech tags, etc.) — audit all instances, not just the Journey card.
 
 ---
 
-## Bug 2 — Skills and Projects content is duplicated across the homepage and their own routes
+## Bug 2 — Hero last name ("KUMAR BHADANI") has a contrast failure in light mode
 
-**What's happening:** The full Skills section (all categories, all chips) and the full Projects carousel appear both inline on the homepage's long scroll *and* again, identically, on `/skills` and `/projects`.
-
-**Why it's a bug:** duplicate content bloats the homepage (more to download and scroll past) and gives no reason for a recruiter to ever click into the dedicated pages — they've already seen everything. It also duplicates your maintenance burden: update a project, remember to update it in two places (or, worse, it's the same data source rendered twice, which is fine for accuracy but still means the homepage is unnecessarily heavy).
+**Evidence:** The stacked hero name uses solid fill for the first name ("AYUSH") and outline-only (stroke, no fill) text for the last name ("KUMAR BHADANI"). In dark mode this is faint but readable; in light mode the outline color is close enough to the background that the text nearly disappears.
 
 **Fix:**
-1. Pick one place for the *full* version of each section (the dedicated route) and make the homepage version a **preview/teaser** — e.g., homepage Skills = top 6–8 tags only with a "See full stack →" link to `/skills`; homepage Projects = 3 cards with a "See all projects →" link to `/projects`.
-2. If you're pulling this content from a shared data file (looks likely, given `data/` and `lib/` folders in your repo structure), add a `featured: true` flag or a `.slice(0, 3)` on the homepage query instead of rendering the full array.
+1. Give the outline stroke color a theme-specific value rather than one fixed color used in both modes — it needs to be darker/higher-contrast in light mode than in dark mode to read the same way visually.
+2. Alternatively, increase stroke width slightly and/or add a very subtle fill (5–10% opacity) so the letterforms hold together even at a glance, rather than relying purely on a thin outline against a busy grid background (see Bug 4).
+3. Run this specific element through a contrast checker in both themes — outline-only text doesn't get standard contrast-ratio tooling attention by default, so verify manually.
 
 ---
 
-## Bug 3 — Hero availability badge text appears to render twice
+## Bug 3 — Primary CTA ("View Projects") looks disabled in light mode
 
-**What's happening:** the fetched markup showed:
-> "Available for Internships & Early Careers (Graduating 2027)Available for Internships (Graduating 2027)"
-
-Two overlapping/duplicate versions of the same badge text, back to back, with no separator.
-
-**Why it's a bug:** this is your hero section — the very first thing a recruiter sees. If this is visually duplicated (not just an artifact of how the text was extracted), it looks broken in the first 3 seconds.
-
-**Possible causes:**
-- A responsive component rendering two variants of the badge (e.g., a short mobile string and a long desktop string) both mounted in the DOM at once instead of conditionally, with CSS only hiding one — screen readers and text-extraction tools then see both.
-- An animation library (Framer Motion) cloning the element for a transition (e.g., a "flip" or marquee effect) and leaving both copies in the accessibility tree.
+**Evidence:** In dark mode, "View Projects" has a visible purple outline/border and reads as an active button. In light mode, the same button is a very low-contrast lavender-on-near-white — visually indistinguishable from a disabled state, next to the solid "GitHub" button which reads correctly in both themes.
 
 **Fix:**
-1. Find the badge component (likely something like `AvailabilityBadge.tsx` or inline in your `Hero` component).
-2. If there are two conditional strings for mobile/desktop, make sure only one is ever in the DOM — use a single string with responsive CSS truncation, or conditionally render with `{isDesktop ? longText : shortText}` rather than rendering both and hiding one with `hidden md:block` (hiding still leaves duplicate text for screen readers/crawlers unless you also add `aria-hidden` to the hidden copy).
-3. If it's an animation clone, check that the animated/duplicate copy has `aria-hidden="true"` and isn't included in accessible/extracted text.
-4. Manually re-check the hero in a browser (not just this report) to confirm whether it's a visual bug or purely a text-extraction artifact — worth 30 seconds to verify before you start digging into the component.
+1. This is your primary call-to-action — it should have the *strongest* visual weight on the page in both themes, not the weakest. Increase border contrast and/or add a subtle background fill in light mode so it doesn't rely on a thin, pale outline alone.
+2. Compare directly against the "GitHub" button (which works correctly in both themes) — replicate whatever gives that button its contrast (likely a solid or near-solid background) rather than the outline-only treatment currently used for "View Projects."
 
 ---
 
-## Bug 4 — "Live" Visitor Orbit shows a broken/fake state
+## Bug 4 — Background grid pattern visually collides with the outlined hero type
 
-**What's happening:** the visitor-presence globe feature displayed:
-> "Connecting… Loading globe… Signal: — Nodes: — visible Mode: connecting… Resolving visitor signal… Realtime data is unavailable here, so this preview uses local signals."
-
-**Why it's a bug:** it's presenting itself as a live real-time feature, then admitting inline that it's faking the data. Whether this is because the Ably real-time key isn't configured in this environment, rate-limited, or genuinely down in production, the user-facing result is the same: a headline "live" feature that visibly doesn't work.
+**Evidence:** The decorative graph-paper grid behind the hero runs directly through the outline-only "KUMAR BHADANI" text, so grid lines show through the open letterforms. Combined with Bug 2's low contrast, this makes the name look glitched rather than intentionally styled.
 
 **Fix:**
-1. Check your `ABLY_API_KEY` is actually set and valid in the **production** Vercel environment (not just `.env.local`) — this is the single most common cause of a real-time feature working locally and failing live.
-2. Add a proper fallback state: if Ably fails to connect, show a static, honest message ("Live presence unavailable") instead of an infinite "connecting…" loop, or hide the whole widget until connection succeeds.
-3. Longer term (see full audit): consider removing this feature. It pulls in `three`, `@react-three/fiber`, `@react-three/drei`, and `react-globe.gl` for a decorative counter — a heavy dependency cost for something that, when broken, actively undermines credibility. If you keep it, gate it behind a "load visualization" interaction so it's not in the critical render path and a connection failure doesn't greet every first-time visitor.
+1. Fade/mask the grid pattern out directly behind the hero headline (a radial or linear gradient mask that reduces grid opacity to near-zero in the text's bounding box), so the grid stays visible around the type but not through it.
+2. This pairs with Bug 2's fix — solving contrast alone won't fully fix the "busy" look if the grid is still bleeding through the letter outlines.
 
 ---
 
-## Bug 5 — Project carousel likely only exposes the first project's full content
+## Bug 5 — Floating capsule nav wastes horizontal space on mobile
 
-**What's happening:** on `/projects`, the fetched HTML showed full detail (description, GitHub link, Live link) for the first carousel slide (CodeVerdict), but the other two visible thumbnails (AskSQL, CareerIQ) only appeared as bare `<img>` alt text with no accompanying description/links in the initial markup. A "1 / 4" counter confirms there's a 4th project not represented at all in what was fetched.
-
-**Why it's a bug:** if the other projects' text/links are only injected client-side on carousel interaction, then:
-- Search engines crawling the page may only ever index your first project.
-- Screen reader users and anyone browsing with JS disabled or slow-loading JS may never reach projects 2–4.
-- A recruiter skimming quickly (many do link-preview or scroll instead of clicking through a carousel) may miss 3 of your 4 projects entirely.
+**Evidence:** The rounded nav pill ("AB" + theme toggle + hamburger) floats with large empty margins on both sides on a narrow mobile viewport, while the theme toggle and hamburger icons sit cramped close together on the right edge of the pill.
 
 **Fix:**
-1. Render all project cards' text content (title, description, links) in the initial server-rendered HTML — the carousel/rail should be a *visual* navigation layer on top of content that already exists in the DOM, not the mechanism that creates the content.
-2. If using Framer Motion for the 3D-rail effect, keep all slide content mounted (just visually offset/scaled for non-active slides) rather than mounting only the active slide.
-3. Verify with "View Page Source" (not just DevTools inspector, which shows post-hydration DOM) that all 4 projects' text appears before any JS runs.
+1. On mobile specifically, widen the pill closer to full-bleed (with a small consistent side margin, e.g. 16px) instead of keeping the same proportional width used on desktop — capsule nav bars are a desktop-friendly pattern that needs a tighter mobile-specific breakpoint.
+2. Add a touch more spacing between the theme toggle and hamburger icons so they don't read as a single cramped tap target — both need comfortable independent touch areas (44px minimum tap target per standard mobile accessibility guidance).
 
 ---
 
-## Bug 6 — Inconsistent page titles
+## Bug 6 — Tagline text differs between screenshots
 
-**What's happening:** `/`, `/about`, and `/journey` all share the same `<title>` ("Ayush Kumar Bhadani — Portfolio"), while `/skills` and `/projects` correctly have distinct titles ("Skills | Ayush Kumar Bhadani", "Projects | Ayush Kumar Bhadani").
+**Evidence:** Dark-mode screenshot shows "MULTI-AGENT SYSTEMS BUILDER" as the small label above the hero name; the light-mode screenshot shows "AI/ML ENGINEER" in the same position.
 
-**Why it's a bug:** identical browser-tab titles across multiple open tabs make it hard for a recruiter to find your site again among other tabs, and it's a missed, easy SEO win — distinct titles per route help search engines and social previews differentiate pages.
-
-**Fix:** apply the same `metadata` export pattern you already used for `/skills` and `/projects` (via Next.js's `generateMetadata` or a static `metadata` object per route) to every route, including `/about`, `/journey`, and `/contact`. This is a ~15-minute fix once Bug 1's routing is sorted out.
+**Fix (verification, not a guaranteed bug):**
+1. If this is an intentional rotating/cycling label (multiple taglines cycling on an interval or on load), that's fine — but confirm it isn't re-randomizing on every theme toggle, which would feel like a glitch rather than a feature to someone switching themes to test the site (exactly what's happening here).
+2. If it's unintentional — e.g., two different label variants tied by mistake to theme state instead of a timer/rotation — decouple the tagline from theme logic entirely.
 
 ---
 
-## Fix Priority Order
+## Priority Order
 
-1. **Bug 1** (routing split-brain) — fix first, everything else about IA depends on this decision.
-2. **Bug 3** (duplicate hero text) — cheap, high-visibility fix.
-3. **Bug 4** (broken live globe) — cheap fix (env var check) or bigger fix (remove feature) — see full audit for the "remove it" argument.
-4. **Bug 5** (carousel content not in initial DOM) — affects SEO and accessibility, worth fixing before you actively start sharing the link for job applications.
-5. **Bug 2** (duplicate content) — natural side effect of fixing Bug 1, address together.
-6. **Bug 6** (page titles) — quick cleanup once routing is stable.
+1. **Bug 1** — broken tag chips (data-loss-looking bug, highest visibility, likely repeated across the site wherever this component is reused)
+2. **Bug 3** — primary CTA looking disabled in light mode (directly costs clicks)
+3. **Bug 2 + Bug 4** — hero name legibility + grid collision (fix together, same root styling area)
+4. **Bug 6** — confirm tagline behavior is intentional
+5. **Bug 5** — mobile nav spacing polish
+
+**General theme QA process going forward:** every component that ships needs to be checked in *both* themes before merging, specifically anything using outline/stroke text, low-opacity fills, or reused chip/tag components — those are exactly the patterns that silently break when a theme token isn't fully wired through.
