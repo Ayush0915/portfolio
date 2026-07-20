@@ -127,6 +127,7 @@ export default function ProjectsRail() {
               alt=""
               fill
               priority={index === 0}
+              sizes="100vw"
               className="object-cover scale-125 blur-[90px] saturate-[1.9] opacity-50"
               aria-hidden
             />
@@ -188,6 +189,7 @@ export default function ProjectsRail() {
                     src={card.src}
                     alt={card.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover"
                   />
                 ) : (

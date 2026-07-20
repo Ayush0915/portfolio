@@ -34,44 +34,31 @@ export default function SkillsOrbit() {
             {group.category}
           </h2>
 
-          {/* Badges container */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-4 py-2">
+          {/* Uniform Chip/Pill Badges container */}
+          <div className="flex flex-wrap items-center gap-3 py-1">
             {group.skills.map((skill) => {
-              const hasIcon = !!ICONS[skill];
+              const iconUrl = ICONS[skill];
 
-              if (hasIcon) {
-                return (
-                  <div
-                    key={skill}
-                    className="flex flex-col items-center gap-2 cursor-default group w-[72px]"
-                  >
-                    {/* Circular Logo Badge */}
-                    <div className="w-12 h-12 rounded-full bg-zinc-950 border border-zinc-855 shadow-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:border-indigo-500/60 group-hover:shadow-indigo-500/10 group-hover:shadow-lg p-2.5">
-                      <Image
-                        src={ICONS[skill]}
-                        alt={skill}
-                        width={28}
-                        height={28}
-                        className="h-full w-full object-contain"
-                      />
-                    </div>
-
-                    {/* Skill Name Label */}
-                    <span className="text-[10px] font-medium text-zinc-400 text-center leading-tight max-w-[80px] group-hover:text-zinc-200 transition-colors">
-                      {skill}
-                    </span>
-                  </div>
-                );
-              }
-
-              // Text-chip Badge for concepts/techniques without a logo
               return (
                 <div
                   key={skill}
-                  className="inline-flex items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/30 px-3.5 py-2 text-xs font-medium text-zinc-300 transition-all duration-300 hover:border-indigo-500/50 hover:bg-zinc-900/50 hover:text-indigo-300 hover:shadow-[0_0_12px_rgba(99,102,241,0.08)] cursor-default"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/60 px-4 py-2 text-xs font-medium text-zinc-300 transition-all duration-300 hover:border-indigo-500/50 hover:bg-zinc-800/80 hover:text-zinc-100 hover:shadow-[0_0_14px_rgba(99,102,241,0.2)] cursor-default"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
-                  {skill}
+                  {iconUrl ? (
+                    <div className="relative h-4 w-4 shrink-0">
+                      <Image
+                        src={iconUrl}
+                        alt={skill}
+                        width={16}
+                        height={16}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400/80 shadow-[0_0_6px_rgba(129,140,248,0.8)]" />
+                  )}
+                  <span>{skill}</span>
                 </div>
               );
             })}

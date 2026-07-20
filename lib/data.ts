@@ -123,7 +123,7 @@ export const projects: Project[] = [
       "Agent execution and validation pipeline runs concurrently in under 12 seconds for typical pull requests."
     ],
     bullets: [
-      "Built a multi-agent workflow with 4 specialized async agents (Security, Quality, Performance, Test Coverage) using Python asyncio, with isolated error handling per agent.",
+      "Achieved 87.5% precision & 100% recall on a labeled PR benchmark — 4 async agents (Security, Quality, Performance, Test Coverage) complete a full review in under 12 seconds.",
       "Built a RAG pipeline with Sentence Transformer embeddings and FAISS vector search to ground agent outputs in secure-coding reference docs.",
       "Wired Bandit static analysis into the Security agent's pipeline with a deterministic merge-verification step, so findings never get silently dropped.",
       "Ran a precision/recall evaluation suite against a labeled PR benchmark — 87.5% precision, 100% recall — with a documented failure-mode analysis.",
@@ -147,7 +147,7 @@ export const projects: Project[] = [
       "Hardened execution safety via AST whitelisting and 5-second query timeouts."
     ],
     bullets: [
-      "Built a natural-language-to-SQL workflow that accepts plain-English prompts and generates safe SQL for structured datasets.",
+      "Reduced system RAM footprint to ~60 MB baseline (vs. 512 MB+ for typical NL-to-SQL stacks), enabling zero-cost free-tier deployment with hardened AST-whitelisted SQL execution.",
       "Ran queries inside an isolated DuckDB sandbox, so results stay session-scoped and the execution surface stays tight.",
       "Added plain-English explanations plus tabular results to make the database output understandable for non-technical users.",
       "Shipped a lightweight React + FastAPI experience optimized for fast free-tier deployment and low memory usage.",
@@ -170,7 +170,7 @@ export const projects: Project[] = [
       "Feature engineering cut intra-cluster variance by ~30% and API endpoints average under 200ms latency."
     ],
     bullets: [
-      "Built an end-to-end ML pipeline — data prep, feature engineering, training, evaluation — using K-Means to segment users into 3 behavioral risk profiles (~85% consistency).",
+      "~85% clustering consistency (silhouette score) across 3 behavioral risk profiles on 10K+ records — feature engineering cut intra-cluster variance by ~30%, API latency under 200ms.",
       "Engineered 4 behavioral metrics from structured and unstructured data, cutting intra-cluster variance by ~30% through feature normalization.",
       "Cleaned and processed 10K+ behavioral records with Pandas/NumPy, and built automated Plotly dashboards (gauge charts, radar plots) to replace manual reporting.",
       "Shipped async REST APIs with FastAPI at ~200ms inference latency for the data pipeline.",
@@ -193,7 +193,7 @@ export const projects: Project[] = [
       "ATS similarity matching aligns with human expert grading at ~90% consistency."
     ],
     bullets: [
-      "Built an ATS compatibility scorer using semantic similarity (all-MiniLM-L6-v2) instead of plain keyword matching, so it measures meaning, not just overlap.",
+      "~90% ATS-match consistency vs. human expert grading — semantic scorer (all-MiniLM-L6-v2) plus LLM bullet rewrites under 500ms, skill-gap ranking by role criticality.",
       "Added skill-gap analysis that ranks missing keywords by how critical they are to the target role.",
       "Built an AI career coach on Groq/Llama 3.3 — bullet rewriter, interview question generator, and LinkedIn summary writer, all under 500ms inference.",
       "Full-stack build: React + Vite frontend, FastAPI backend, Dockerized for deployment, with live job matches pulled from the JSearch API.",
@@ -292,11 +292,6 @@ export const currentlyExploring = [
     topic: "DSPy (Declarative Self-Improving Pipelines)",
     description: "Replacing traditional prompt engineering with programmatic model instruction optimization.",
     status: "Active",
-  },
-  {
-    topic: "Go / Backend Systems",
-    description: "Exploring Go's concurrency patterns for high-throughput, low-latency API development.",
-    status: "Up Next",
   },
 ];
 
