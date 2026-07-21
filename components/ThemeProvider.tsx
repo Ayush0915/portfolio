@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 type Theme = "dark" | "light";
 
@@ -12,21 +12,22 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Always default to dark mode on initial server/client render
   const [theme, setTheme] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    // Read persisted choice from localStorage, falling back strictly to 'dark'
-    const saved = localStorage.getItem("portfolio-theme") as Theme | null;
-    const initialTheme: Theme = saved === "light" || saved === "dark" ? saved : "dark";
-    
-    setTheme(initialTheme);
-    setMounted(true);
+    // Read the already-set data-theme attribute set by inline script in head
+    const currentTheme = document.documentElement.getAttribute("data-theme") as Theme | null;
+    if (currentTheme === "light" || currentTheme === "dark") {
+      setTheme(currentTheme);
+    }
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
     const root = document.documentElement;
     root.setAttribute("data-theme", theme);
@@ -40,7 +41,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     localStorage.setItem("portfolio-theme", theme);
-  }, [theme, mounted]);
+  }, [theme]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));

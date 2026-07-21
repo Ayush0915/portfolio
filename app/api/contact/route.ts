@@ -1,18 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { checkRateLimit } from "@/lib/rate-limit";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const TO_EMAIL = process.env.CONTACT_TO_EMAIL ?? "ayushbhadani0915@gmail.com";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(request: NextRequest) {
+  // Server-side rate limiting: 3 requests per 10 minutes per IP
+  const rateLimit = checkRateLimit(request, {
+    prefix: "contact",
+    windowMs: 10 * 60 * 1000,
+    maxRequests: 3,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many contact messages sent. Please try again in 10 minutes." },
+      { status: 429 }
+    );
+  }
+
   try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.error("[contact] Missing RESEND_API_KEY environment variable.");
+      return NextResponse.json(
+        { error: "Email service not configured" },
+        { status: 500 }
+      );
+    }
+
+    const resend = new Resend(apiKey);
+
     const body = await request.json();
-    const { name, email, subject, message } = body as {
+    const { name, email, subject, message, website, company } = body as {
       name?: string;
       email?: string;
       subject?: string;
       message?: string;
+      website?: string;
+      company?: string;
     };
+
+    // Honeypot bot protection check
+    if (website?.trim() || company?.trim()) {
+      return NextResponse.json({ success: true });
+    }
 
     // Basic validation
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
@@ -21,6 +62,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const safeName = escapeHtml(name.trim());
+    const safeEmail = escapeHtml(email.trim());
+    const safeSubject = subject?.trim() ? escapeHtml(subject.trim()) : "";
+    const safeMessage = escapeHtml(message.trim());
 
     const emailSubject = subject?.trim()
       ? `Portfolio contact: ${subject.trim()}`
@@ -38,23 +84,23 @@ export async function POST(request: NextRequest) {
           <table style="width:100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px;">
             <tr>
               <td style="padding: 8px 12px; background: #f5f5f5; font-weight: 600; width: 90px; border-radius: 4px 0 0 4px;">Name</td>
-              <td style="padding: 8px 12px; background: #fafafa; border-radius: 0 4px 4px 0;">${name.trim()}</td>
+              <td style="padding: 8px 12px; background: #fafafa; border-radius: 0 4px 4px 0;">${safeName}</td>
             </tr>
             <tr>
               <td style="padding: 8px 12px; background: #f5f5f5; font-weight: 600; border-radius: 4px 0 0 4px;">Email</td>
-              <td style="padding: 8px 12px; background: #fafafa; border-radius: 0 4px 4px 0;"><a href="mailto:${email.trim()}" style="color: #4f46e5;">${email.trim()}</a></td>
+              <td style="padding: 8px 12px; background: #fafafa; border-radius: 0 4px 4px 0;"><a href="mailto:${safeEmail}" style="color: #4f46e5;">${safeEmail}</a></td>
             </tr>
             ${
-              subject?.trim()
+              safeSubject
                 ? `<tr>
               <td style="padding: 8px 12px; background: #f5f5f5; font-weight: 600; border-radius: 4px 0 0 4px;">Subject</td>
-              <td style="padding: 8px 12px; background: #fafafa; border-radius: 0 4px 4px 0;">${subject.trim()}</td>
+              <td style="padding: 8px 12px; background: #fafafa; border-radius: 0 4px 4px 0;">${safeSubject}</td>
             </tr>`
                 : ""
             }
           </table>
-          <div style="background: #f9f9f9; border-left: 3px solid #4f46e5; padding: 16px 20px; border-radius: 0 6px 6px 0; font-size: 14px; line-height: 1.65; white-space: pre-wrap;">${message.trim()}</div>
-          <p style="margin-top: 24px; font-size: 12px; color: #999;">Reply to this email to respond directly to ${name.trim()}.</p>
+          <div style="background: #f9f9f9; border-left: 3px solid #4f46e5; padding: 16px 20px; border-radius: 0 6px 6px 0; font-size: 14px; line-height: 1.65; white-space: pre-wrap;">${safeMessage}</div>
+          <p style="margin-top: 24px; font-size: 12px; color: #999;">Reply to this email to respond directly to ${safeName}.</p>
         </div>
       `,
     });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -127,6 +128,20 @@ What specific topic can I help you explore?`;
 }
 
 export async function POST(request: NextRequest) {
+  // Server-side rate limiting: 5 requests per minute per IP
+  const rateLimit = checkRateLimit(request, {
+    prefix: 'chat',
+    windowMs: 60 * 1000,
+    maxRequests: 5,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many chat requests. Please wait a minute before trying again.' },
+      { status: 429 }
+    );
+  }
+
   try {
     // Parse request body
     const { messages } = (await request.json().catch(() => ({}))) as { messages: ChatMessage[] };

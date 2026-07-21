@@ -4,7 +4,7 @@ import { useState, useRef, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ExternalLink, Github } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { projects } from "@/lib/data";
 
 const ITEMS = projects.map((p) => ({
@@ -53,6 +53,7 @@ function getServerViewportSnapshot() {
 }
 
 export default function ProjectsRail() {
+  const shouldReduceMotion = useReducedMotion();
   const viewportWidth = useSyncExternalStore(
     subscribeToViewport,
     getViewportSnapshot,
@@ -107,10 +108,25 @@ export default function ProjectsRail() {
     }
   };
 
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      prev();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      next();
+    }
+  };
+
   const item = ITEMS[index];
 
   return (
     <>
+      {/* Accessible live region for screen readers */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        Project {index + 1} of {ITEMS.length}: {item.title}
+      </div>
+
       {/* ── Full-viewport background — bleeds through entire page ── */}
       <AnimatePresence>
         <motion.div
@@ -119,7 +135,7 @@ export default function ProjectsRail() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.1 }}
+          transition={shouldReduceMotion ? { duration: 0.2 } : { duration: 1.1 }}
         >
           {item.src && (
             <Image
@@ -139,7 +155,10 @@ export default function ProjectsRail() {
 
       {/* ── Carousel — breaks out of max-w-5xl constraint ───────── */}
       <section
-        className="relative flex flex-col items-center pt-2 pb-6 select-none"
+        tabIndex={0}
+        role="region"
+        aria-label="Featured projects carousel"
+        className="relative flex flex-col items-center pt-2 pb-6 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 rounded-2xl"
         style={{
           width: "100vw",
           marginLeft: "calc(50% - 50vw)",
@@ -148,6 +167,7 @@ export default function ProjectsRail() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         onWheel={onWheel}
+        onKeyDown={onKeyDown}
       >
         {/* Cards track */}
         <div
@@ -173,12 +193,23 @@ export default function ProjectsRail() {
                   zIndex: isActive ? 10 : 1,
                   cursor: isActive ? "default" : "pointer",
                 }}
-                animate={{
-                  x: offset * SIDE_OFFSET,
-                  scale: isActive ? 1 : 0.82,
-                  opacity: isActive ? 1 : 0.36,
-                }}
-                transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
+                animate={
+                  shouldReduceMotion
+                    ? {
+                        x: offset * SIDE_OFFSET,
+                        opacity: isActive ? 1 : 0.36,
+                      }
+                    : {
+                        x: offset * SIDE_OFFSET,
+                        scale: isActive ? 1 : 0.82,
+                        opacity: isActive ? 1 : 0.36,
+                      }
+                }
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0.2 }
+                    : { duration: 0.55, ease: [0.32, 0.72, 0, 1] }
+                }
                 onClick={() => {
                   if (offset === -1) prev();
                   if (offset === 1) next();
@@ -223,10 +254,10 @@ export default function ProjectsRail() {
           <AnimatePresence mode="wait">
             <motion.div
               key={`text-${index}`}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.35, delay: 0.08 }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
+              transition={shouldReduceMotion ? { duration: 0.2 } : { duration: 0.35, delay: 0.08 }}
             >
               {item.meta && (
                 <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--accent-primary)]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>

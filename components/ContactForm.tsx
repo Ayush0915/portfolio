@@ -8,6 +8,7 @@ export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -24,7 +25,7 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, subject, message }),
+        body: JSON.stringify({ name, email, subject, message, website }),
       });
 
       const data = await res.json();
@@ -39,6 +40,7 @@ export default function ContactForm() {
       setEmail("");
       setSubject("");
       setMessage("");
+      setWebsite("");
     } catch {
       setError("Network error — check your connection and try again.");
     } finally {
@@ -116,6 +118,20 @@ export default function ContactForm() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className="w-full rounded-lg border border-[var(--border-color)] bg-[var(--bg-input)] px-4 py-2.5 text-sm text-[var(--text-main)] placeholder-[var(--text-faint)] outline-none transition-colors focus:border-[var(--accent-primary)] resize-none"
+              />
+            </div>
+
+            {/* Honeypot field — visually hidden from human users */}
+            <div className="hidden" aria-hidden="true">
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
               />
             </div>
 
