@@ -74,15 +74,7 @@ export default function Home() {
                 AYUSH
               </h1>
 
-              {/* Hero Outline Name with Opaque Fill & Theme Variable Stroke */}
-              <h1 
-                className="mb-6 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-none tracking-tight select-none" 
-                style={{ 
-                  color: "var(--hero-fill)",
-                  WebkitTextStroke: "2px var(--hero-stroke)",
-                  textShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
-                }}
-              >
+              <h1 className="mb-6 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-none tracking-tight text-[var(--text-main)]">
                 KUMAR BHADANI
               </h1>
             </motion.div>
