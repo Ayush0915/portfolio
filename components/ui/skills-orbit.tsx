@@ -4,22 +4,31 @@ import Image from "next/image";
 import { skillGroups } from "@/lib/data";
 
 // ─── CDN icon URLs for real-product logos only ──────────────────────────────
+// Only include entries for skills that have an official, recognisable brand
+// icon. Conceptual skills (RAG, asyncio, FAISS, SQL, Agile…) are intentionally
+// omitted so they render as clean text-only chips — no dot bullet, no icon.
 const ICONS: Record<string, string> = {
-  Python:       "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
-  "C++":        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg",
-  SQL:          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/azuresqldatabase/azuresqldatabase-original.svg",
-  "scikit-learn": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/scikitlearn/scikitlearn-original.svg",
-  FastAPI:      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg",
-  MongoDB:      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg",
-  MySQL:        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg",
-  DuckDB:       "https://cdn.simpleicons.org/duckdb/FFF000",
-  Git:          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg",
-  GitHub:       "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
-  Pandas:       "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pandas/pandas-original.svg",
-  NumPy:        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/numpy/numpy-original.svg",
-  Plotly:       "https://cdn.simpleicons.org/plotly/3F4F75",
-  "Power BI":   "https://cdn.simpleicons.org/powerbi/F2C811",
+  Python:          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
+  "C++":           "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg",
+  "scikit-learn":  "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/scikitlearn/scikitlearn-original.svg",
+  FastAPI:         "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg",
+  MongoDB:         "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg",
+  MySQL:           "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg",
+  DuckDB:          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/duckdb/duckdb-original.svg",
+  Git:             "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg",
+  GitHub:          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
+  Pandas:          "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pandas/pandas-original.svg",
+  NumPy:           "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/numpy/numpy-original.svg",
+  Plotly:          "https://cdn.simpleicons.org/plotly/3F4F75",
+  "Power BI":      "https://cdn.simpleicons.org/powerbi/F2C811",
 };
+
+// Skills deliberately excluded from ICONS (no distinct brand logo):
+//   SQL         — no single generic logo; Azure SQL icon is wrong/misleading
+//   asyncio     — Python stdlib module, no official brand mark
+//   FAISS       — Meta research library, no logo
+//   RAG, Agentic AI, K-Means, Sentence Transformers, Prompt Engineering,
+//   REST APIs, Agile/Scrum, EDA — all conceptual, no brand icon
 
 export default function SkillsOrbit() {
   return (
@@ -45,7 +54,7 @@ export default function SkillsOrbit() {
                   className="inline-flex items-center gap-2.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-chip)] px-4 py-2 text-xs font-medium text-[var(--text-sub)] transition-all duration-300 hover:border-[var(--accent-primary)] hover:bg-[var(--bg-chip-hover)] hover:text-[var(--text-main)] hover:shadow-sm cursor-default"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                 >
-                  {iconUrl ? (
+                  {iconUrl && (
                     <div className="relative h-4 w-4 shrink-0">
                       <Image
                         src={iconUrl}
@@ -55,8 +64,6 @@ export default function SkillsOrbit() {
                         className="h-full w-full object-contain"
                       />
                     </div>
-                  ) : (
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400/80 shadow-[0_0_6px_rgba(129,140,248,0.8)]" />
                   )}
                   <span>{skill}</span>
                 </div>
