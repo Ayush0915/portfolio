@@ -188,7 +188,7 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Link
                 href="/journey"
                 className="group rounded-xl border border-[var(--border-color)] bg-[var(--bg-card)] p-3.5 transition-all duration-300 hover:border-indigo-500/40 hover:bg-[var(--bg-card-hover)]"
@@ -211,18 +211,6 @@ export default function Home() {
                 </div>
                 <p className="mt-1 text-lg font-black text-indigo-600 dark:text-indigo-400">4 Systems</p>
                 <p className="text-[10px] text-[var(--text-muted)] mt-0.5 line-clamp-1">CodeVerdict, AskSQL, etc.</p>
-              </Link>
-
-              <Link
-                href="/journey"
-                className="group rounded-xl border border-[var(--border-color)] bg-[var(--bg-card)] p-3.5 transition-all duration-300 hover:border-indigo-500/40 hover:bg-[var(--bg-card-hover)]"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-[var(--text-muted)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>GDG Lead</p>
-                  <ArrowRight size={12} className="text-[var(--text-muted)] group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all" />
-                </div>
-                <p className="mt-1 text-lg font-black text-indigo-600 dark:text-indigo-400">1000+ Taught</p>
-                <p className="text-[10px] text-[var(--text-muted)] mt-0.5 line-clamp-1">GDG Workshops & Jams</p>
               </Link>
 
               <Link
