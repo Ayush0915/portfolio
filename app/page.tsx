@@ -70,11 +70,11 @@ export default function Home() {
             <motion.div variants={itemVariants} className="relative inline-block my-2">
               <div className="absolute -inset-6 -z-10 rounded-3xl bg-[var(--bg-page)] opacity-95 blur-sm" />
               
-              <h1 className="mb-2 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-none tracking-tight text-[var(--text-main)]">
+              <h1 className="mb-1 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-[1.05] tracking-tight text-[var(--text-main)]">
                 AYUSH
               </h1>
 
-              <h1 className="mb-6 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-none tracking-tight text-[var(--text-main)]">
+              <h1 className="mb-6 text-[clamp(2.5rem,7.5vw,5rem)] font-black leading-[1.05] tracking-tight text-[var(--text-main)]">
                 KUMAR BHADANI
               </h1>
             </motion.div>
